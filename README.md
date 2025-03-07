@@ -3,7 +3,7 @@ This script changes A LOT so make sure this wont disable anything you need.
 
 You will need to set powershells ExecutionPolicy to unrestricted with the `Set-ExecutionPolicy unrestricted` command and maybe add it to your exculsions list in defender.
 
-Also check the wiki section for more information about these configurations. https://github.com/snipershane0305/powershell-script/wiki
+Also check the wiki section for more information about these configurations. https://github.com/snipershane0305/powershellscript/wiki
 
 To use this script as intended, put the StartUpScript.ps1 file in `C:\Users\YOUR USERNAME HERE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup` folder, anything in this directory will start when you login to windows.
 

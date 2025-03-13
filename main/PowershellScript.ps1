@@ -298,11 +298,6 @@ write-host "SYSTEM CONFIGURATION" -ForegroundColor white
 ########################################################
 
 
-write-host "Setting Timer Resolution to 0.5" -ForegroundColor red
-Set-Location $env:SystemDrive\
-$SetTimerResolution = ".\SetTimerResolution.exe"
-$resolution = "--resolution 5080 --no-console"
-start-process $SetTimerResolution $Resolution
 write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 write-host "Disabling Hibernation" -ForegroundColor red

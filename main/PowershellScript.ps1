@@ -285,8 +285,8 @@ Set-Location $env:SystemDrive\
 start-sleep -seconds 5
 taskkill /IM memreduct.exe
 write-host "Trimming Windows Drive" -ForegroundColor red
-Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim -PassThru | Out-Null
-Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate -PassThru | Out-Null
+Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
+Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
 write-host "Cleaning System" -ForegroundColor red
 Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null

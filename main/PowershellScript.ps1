@@ -19,7 +19,6 @@ $forcestopservices = @(
 "sshd"
 "ssh-agent"
 "AppXSvc"
-"ClipSVC"
 "smphost"
 "LanmanServer"
 "TokenBroker"

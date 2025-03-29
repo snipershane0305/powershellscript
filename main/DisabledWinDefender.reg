@@ -28,15 +28,20 @@
 "DisableAntiSpyware"=dword:00000001
 "DisableRealtimeMonitoring"=dword:00000001
 "DisableAntiVirus"=dword:00000001
+"DisableRoutinelyTakingAction"=dword:00000001
+"ServiceKeepAlive"=dword:0
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection]
 "DisableRealtimeMonitoring"=dword:00000001
+"DisableBehaviorMonitoring"=dword:00000001
+"DisableIOAVProtection"=dword:00000001
+"DisableOnAccessProtection"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Reporting]
+"DisableEnhancedNotifications"=dword:00000001
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System]
 "EnableSmartScreen"=dword:0
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter]
-"EnabledV9"=dword:0
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet]
 "SpynetReporting"=dword:0

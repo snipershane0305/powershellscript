@@ -304,21 +304,14 @@ bcdedit /deletevalue useplatformtick
 bcdedit /deletevalue disabledynamictick
 bcdedit /deletevalue useplatformclock
 bcdedit /deletevalue tscsyncpolicy
-bcdedit /deletevalue MSI
 bcdedit /deletevalue x2apicpolicy
 bcdedit /deletevalue vsmlaunchtype
 bcdedit /set useplatformtick yes #//DANGEROUS!!//
 bcdedit /set disabledynamictick yes
 bcdedit /set useplatformclock no #//DANGEROUS!!//
 bcdedit /set tscsyncpolicy legacy
-bcdedit /set MSI Default
 bcdedit /set x2apicpolicy Enable
-bcdedit /set nx OptIn
 bcdedit /set vsmlaunchtype off
-write-host "Changing fsutil Settings" -ForegroundColor red
-fsutil behavior set disabledeletenotify 0
-fsutil behavior set disableLastAccess 1
-fsutil behavior set disable8dot3 1
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled
 Enable-NetAdapterRss -Name *
@@ -383,7 +376,6 @@ Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWor
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSensitivity" -Type string -Value 10
-Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type string -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 1
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Type DWord -Value 1
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Type DWord -Value 1

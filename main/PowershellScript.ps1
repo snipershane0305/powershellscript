@@ -63,6 +63,7 @@ $forcestopservices = @(
 "WSearch"
 "wuauserv"
 "wmiApSrv"
+"WSAIFabricSvc"
 "XboxGipSvc"
 "XblAuthManager"
 "XblGameSave"
@@ -101,6 +102,7 @@ $disabledservices = @(
 "WSearch"
 "wuauserv"
 "wmiApSrv"
+"WSAIFabricSvc"
 "XboxGipSvc"
 "XblAuthManager"
 "XblGameSave"
@@ -518,11 +520,6 @@ write-host "SYSTEM CLEANUP" -ForegroundColor white
 ##################################################
 
 
-write-host "Releasing Memory" -ForegroundColor red
-Set-Location $env:SystemDrive\
-.\memreduct.exe -clean:full
-start-sleep -seconds 5
-taskkill /IM memreduct.exe
 #set services to manual/disabled and stops background processes
 write-host "Stopping Services and Processes" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
@@ -542,5 +539,11 @@ net stop TokenBroker
 net stop BITS
 net stop UsoSvc
 net stop wuauserv
+
+write-host "Releasing Memory" -ForegroundColor red
+Set-Location $env:SystemDrive\
+.\memreduct.exe -clean:full
+start-sleep -seconds 5
+taskkill /IM memreduct.exe
 write-host "done" -ForegroundColor red
 pause

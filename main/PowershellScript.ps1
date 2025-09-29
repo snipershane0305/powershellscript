@@ -350,28 +350,6 @@ foreach ($adapter in $adapters) {
     $interfaceIndex = $adapter.ifIndex
     Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses "9.9.9.11"
 }
-write-host "Changing Defender Settings" -ForegroundColor red
-set-mppreference -AllowSwitchToAsyncInspection $true 2>$null
-set-mppreference -DisableArchiveScanning $true 2>$null
-set-mppreference -DisableCatchupFullScan $true 2>$null
-set-mppreference -DisableCatchupQuickScan $true 2>$null
-set-mppreference -DisableEmailScanning $true 2>$null
-set-mppreference -DisableNetworkProtectionPerfTelemetry $true 2>$null
-Set-MpPreference -DisableCoreServiceTelemetry $true 2>$null
-set-mppreference -DisableRemovableDriveScanning $true 2>$null
-set-mppreference -DisableRestorePoint $true 2>$null 
-set-mppreference -EnableLowCpuPriority $true 2>$null 
-set-mppreference -EnableNetworkProtection disable 2>$null
-set-mppreference -MAPSReporting 0 2>$null
-set-mppreference -RandomizeScheduleTaskTimes $false 2>$null
-set-mppreference -RemediationScheduleDay 8 2>$null
-set-mppreference -ScanAvgCPULoadFactor 5 2>$null
-set-mppreference -ScanOnlyIfIdleEnabled $true 2>$null
-set-mppreference -ScanParameters 1 2>$null
-set-mppreference -ScanScheduleDay 8 2>$null
-set-mppreference -SubmitSamplesConsent 2 2>$null
-set-mppreference -DisableDatagramProcessing $true 2>$null
-Set-MpPreference -EnableControlledFolderAccess Disabled 2>$null
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0

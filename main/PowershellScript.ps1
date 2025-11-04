@@ -299,8 +299,11 @@ write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 write-host "Disabling Hibernation" -ForegroundColor red
 powercfg.exe /hibernate off
-write-host "Enabling Memory Compression" -ForegroundColor red
-Enable-MMAgent -mc
+write-host "Changing MMAgent Settings" -ForegroundColor red
+Disable-MMAgent -MemoryCompression 2>$null
+Disable-MMAgent -ApplicationLaunchPrefetching 2>$null
+Disable-MMAgent -OperationAPI 2>$null
+Disable-MMAgent -ApplicationPreLaunch 2>$null
 write-host "Changing bcdedit Settings" -ForegroundColor red
 bcdedit /deletevalue useplatformtick
 bcdedit /deletevalue disabledynamictick

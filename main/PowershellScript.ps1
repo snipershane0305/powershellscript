@@ -303,7 +303,7 @@ write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
 Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
 start-sleep -seconds 5
-taskkill /IM memreduct.exe /F 2>$null
+taskkill /IM memreduct.exe /F *>$null
 write-host "Trimming System Drive" -ForegroundColor red
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
@@ -340,27 +340,27 @@ bcdedit /set tscsyncpolicy legacy
 bcdedit /set x2apicpolicy Enable
 bcdedit /set vsmlaunchtype off
 write-host "Changing Network Settings" -ForegroundColor red
-netsh int tcp set global rss=enabled
+netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
-netsh int teredo set state disabled
-netsh int tcp set global ecncapability=enable
+netsh int teredo set state disabled | Out-Null
+netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
 Set-NetTCPSetting -SettingName Internetcustom -EcnCapability enabled
-netsh int tcp set global rsc=disable
+netsh int tcp set global rsc=disable | Out-Null
 Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
-netsh int tcp set global nonsackrttresiliency=disabled
+netsh int tcp set global nonsackrttresiliency=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -NonSackRttResiliency disabled
 Set-NetTCPSetting -SettingName Internetcustom -NonSackRttResiliency disabled
-netsh int tcp set global maxsynretransmissions=2
+netsh int tcp set global maxsynretransmissions=2 | Out-Null
 Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 2
 Set-NetTCPSetting -SettingName internetcustom -MaxSynRetransmissions 2
-netsh int tcp set security mpp=disabled
+netsh int tcp set security mpp=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -MemoryPressureProtection disabled
-Set-NetTCPSetting -SettingName Internetcustom -MemoryPressureProtection disabled
-netsh int tcp set supplemental template=internet enablecwndrestart=enabled
-netsh int tcp set supplemental template=custom enablecwndrestart=enabled
-netsh int tcp set supplemental Template=Internet CongestionProvider=ctcp
-netsh int tcp set supplemental Template=custom CongestionProvider=ctcp
+Set-NetTCPSetting -SettingName Internetcustom -MemoryPressureProtection disabled 
+netsh int tcp set supplemental template=internet enablecwndrestart=enabled | Out-Null
+netsh int tcp set supplemental template=custom enablecwndrestart=enabled | Out-Null
+netsh int tcp set supplemental Template=Internet CongestionProvider=ctcp | Out-Null
+netsh int tcp set supplemental Template=custom CongestionProvider=ctcp | Out-Null
 Set-NetTCPSetting -SettingName Internet -CongestionProvider CTCP
 Set-NetTCPSetting -SettingName internet -DelayedAckFrequency 2
 Set-NetTCPSetting -SettingName Internetcustom -DelayedAckFrequency 2
@@ -533,20 +533,19 @@ Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service 
 Stop-Service $forcestopservices -force 2>$null
 Stop-Service $disabledservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
-sc config BITS start=disabled
-sc config UsoSvc start=disabled
-sc config wuauserv start=disabled
-net stop AppXSvc
-net stop InstallService
-net stop TokenBroker
-net stop BITS
-net stop UsoSvc
-net stop wuauserv
-
+sc config BITS start=disabled > $null
+sc config UsoSvc start=disabled > $null
+sc config wuauserv start=disabled > $null
+net stop AppXSvc *>&1 | Out-Null
+net stop InstallService *>&1 | Out-Null
+net stop TokenBroker *>&1 | Out-Null
+net stop BITS *>&1 | Out-Null
+net stop UsoSvc *>&1 | Out-Null
+net stop wuauserv *>&1 | Out-Null
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
 Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
 start-sleep -seconds 5
-taskkill /IM memreduct.exe /F 2>$null
+taskkill /IM memreduct.exe /F *>$null
 write-host "done" -ForegroundColor red
 pause

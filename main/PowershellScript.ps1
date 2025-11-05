@@ -301,9 +301,9 @@ Stop-Service $disabledservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
-.\memreduct.exe -clean:full
+Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
 start-sleep -seconds 5
-taskkill /IM memreduct.exe
+taskkill /IM memreduct.exe /F 2>$null
 write-host "Trimming System Drive" -ForegroundColor red
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
@@ -545,8 +545,8 @@ net stop wuauserv
 
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
-.\memreduct.exe -clean:full
+Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
 start-sleep -seconds 5
-taskkill /IM memreduct.exe
+taskkill /IM memreduct.exe /F 2>$null
 write-host "done" -ForegroundColor red
 pause

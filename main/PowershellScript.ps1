@@ -14,9 +14,8 @@ $forcestopprocesses = @(
 "taskhostw*"
 "DataExchangeHost*"
 )
+
 $forcestopservices = @(
-"sshd"
-"ssh-agent"
 "AppXSvc"
 "smphost"
 "LanmanServer"
@@ -27,7 +26,6 @@ $forcestopservices = @(
 "WdiSystemHost"
 "InstallService"
 "PcaSvc"
-"TokenBroker"
 "DoSvc"
 "AssignedAccessManagerSvc"
 "tzautoupdate"
@@ -76,8 +74,15 @@ $forcestopservices = @(
 "QWAVE"
 "TrkWks"
 "WdiSystemHost"
-"WinHttpAutoProxySvc"
+"WpnService"
+"CDPUserSvc"
+"OneSyncSvc"
+"WpnUserService"
+"WebThreatDefUserservice"
+"WbioSrvc"
+"PresentMonService"
 )
+
 $disabledservices = @(
 "AssignedAccessManagerSvc"
 "tzautoupdate"
@@ -124,8 +129,14 @@ $disabledservices = @(
 "QWAVE"
 "TrkWks"
 "WdiSystemHost"
-"WinHttpAutoProxySvc"
+"WpnService"
+"CDPUserSvc"
+"OneSyncSvc"
+"WpnUserService"
+"WebThreatDefUserservice"
+"WbioSrvc"
 )
+
 $manualservices = @(
 "AxInstSV"
 "AppReadiness"
@@ -234,12 +245,10 @@ $manualservices = @(
 "webthreatdefsvc"
 "WebClient"
 "WFDSConMgrSvc"
-"WbioSrvc"
 "FrameServer"
 "FrameServerMonitor"
 "wcncsvc"
 "WEPHOSTSVC"
-"WerSvc"
 "Wecsvc"
 "StiSvc"
 "wisvc"
@@ -255,27 +264,26 @@ $manualservices = @(
 "ApxSvc"
 "WwanSvc"
 )
+
 $autoservices = @(
-"EventSystem"
+"AudioEndpointBuilder"
+"Audiosrv"
 "CryptSvc"
 "Dhcp"
-"TrkWks"
+"dot3svc"
+"EventSystem"
+"FontCache"
 "InventorySvc"
-"LocalKdc"
 "nsi"
 "Power"
-"ShellHWDetection"
-"SENS"
-"UserManager"
 "ProfSvc"
-"Audiosrv"
-"AudioEndpointBuilder"
+"SENS"
+"ShellHWDetection"
+"TrkWks"
+"UserManager"
 "Wcmsvc"
-"FontCache"
 "Winmgmt"
-"dot3svc"
 "WlanSvc"
-"LanmanWorkstation"
 )
 ######################################################
 write-host "SYSTEM MAINTENANCE" -ForegroundColor white

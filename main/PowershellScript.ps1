@@ -68,6 +68,15 @@ $forcestopservices = @(
 "XblAuthManager"
 "XblGameSave"
 "XboxNetApiSvc"
+"DPS"
+"WdiServiceHost"
+"CDPSvc"
+"LanmanWorkstation"
+"PcaSvc"
+"QWAVE"
+"TrkWks"
+"WdiSystemHost"
+"WinHttpAutoProxySvc"
 )
 $disabledservices = @(
 "AssignedAccessManagerSvc"
@@ -107,6 +116,15 @@ $disabledservices = @(
 "XblAuthManager"
 "XblGameSave"
 "XboxNetApiSvc"
+"DPS"
+"WdiServiceHost"
+"CDPSvc"
+"LanmanWorkstation"
+"PcaSvc"
+"QWAVE"
+"TrkWks"
+"WdiSystemHost"
+"WinHttpAutoProxySvc"
 )
 $manualservices = @(
 "AxInstSV"
@@ -236,8 +254,6 @@ $manualservices = @(
 "W32Time"
 "ApxSvc"
 "WwanSvc"
-"sshd"
-"ssh-agent"
 )
 $autoservices = @(
 "EventSystem"
@@ -261,6 +277,12 @@ $autoservices = @(
 "WlanSvc"
 "LanmanWorkstation"
 )
+######################################################
+write-host "SYSTEM MAINTENANCE" -ForegroundColor white
+######################################################
+
+
+write-host "Stopping Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Stop-Service $disabledservices -force 2>$null
 Get-Service -Name $autoservices -ErrorAction SilentlyContinue | Set-Service -StartupType automatic -force 2>$null
@@ -269,23 +291,15 @@ Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service 
 Stop-Service $forcestopservices -force 2>$null
 Stop-Service $disabledservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
-
-
-######################################################
-write-host "SYSTEM MAINTENANCE" -ForegroundColor white
-######################################################
-
-
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
 .\memreduct.exe -clean:full
 start-sleep -seconds 5
 taskkill /IM memreduct.exe
-write-host "Trimming Windows Drive" -ForegroundColor red
+write-host "Trimming System Drive" -ForegroundColor red
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
-write-host "Cleaning System" -ForegroundColor red
-Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 
@@ -304,7 +318,7 @@ Disable-MMAgent -MemoryCompression 2>$null
 Disable-MMAgent -ApplicationLaunchPrefetching 2>$null
 Disable-MMAgent -OperationAPI 2>$null
 Disable-MMAgent -ApplicationPreLaunch 2>$null
-write-host "Changing bcdedit Settings" -ForegroundColor red
+write-host "Changing Boot Settings" -ForegroundColor red
 bcdedit /deletevalue useplatformtick
 bcdedit /deletevalue disabledynamictick
 bcdedit /deletevalue useplatformclock
@@ -374,6 +388,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowSleepOption" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnablePrefetcher" -Type DWord -Value 0
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" -Name "EnableSuperfetch" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "GlobalTimerResolutionRequests" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" -Name "ThreadedDpcEnable" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control\PriorityControl" -Name "Win32PrioritySeparation" -Type DWord -Value 0x00000016

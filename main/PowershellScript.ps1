@@ -316,7 +316,8 @@ Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recur
 write-host "SYSTEM CONFIGURATION" -ForegroundColor white
 ########################################################
 
-
+write-host "Disabling Indexing on System Drive" -ForegroundColor red
+fsutil behavior set disablelastaccess 1
 write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 write-host "Disabling Hibernation" -ForegroundColor red
@@ -377,6 +378,10 @@ foreach ($adapter in $adapters) {
 }
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchBoxTaskbarMode" -Value 0
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name VisualFXSetting -Value 2
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type DWord -Value 0

@@ -1,6 +1,6 @@
 ﻿Windows Registry Editor Version 5.00
 
-;RUN IN SAFEMODE
+;DISABLE TAMPER PROTECTION THEN RUN IN SAFEMODE
 
 [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WdFilter]
 "start"=dword:00000004

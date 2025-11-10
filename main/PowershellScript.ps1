@@ -313,6 +313,7 @@ Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recur
 write-host "SYSTEM CONFIGURATION" -ForegroundColor white
 ########################################################
 
+
 write-host "Disabling Indexing on System Drive" -ForegroundColor red
 fsutil behavior set disablelastaccess 1
 write-host "Disabling Powershell Telemetry" -ForegroundColor red

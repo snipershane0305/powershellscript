@@ -329,7 +329,7 @@ netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
 Set-NetTCPSetting -SettingName Internetcustom -EcnCapability enabled
 netsh int tcp set global rsc=enabled | Out-Null
-Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enlabed
+Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
 netsh int tcp set global nonsackrttresiliency=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -NonSackRttResiliency disabled
 Set-NetTCPSetting -SettingName Internetcustom -NonSackRttResiliency disabled

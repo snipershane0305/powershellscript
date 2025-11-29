@@ -255,7 +255,6 @@ $manualservices = @(
 "FrameServer"
 "FrameServerMonitor"
 "WEPHOSTSVC"
-"WerSvc"
 "StiSvc"
 "wisvc"
 "LicenseManager"

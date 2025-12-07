@@ -1,11 +1,8 @@
-#force opens powershell 7 as admin.
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
-#imports modules so they can be used to configure settings
 Import-Module ScheduledTasks 2>$null
 Import-Module NetAdapter 2>$null
 Import-Module NetTCPIP 2>$null 
 Import-Module DnsClient 2>$null
-
 $forcestopprocesses = @(
 "ApplicationFrameHost*"
 "dllhost*"
@@ -16,7 +13,6 @@ $forcestopprocesses = @(
 "smartscreen*"
 "SystemSettingsBroker*"
 )
-
 $disabledservices = @(
 "tzautoupdate"
 "BITS"
@@ -70,7 +66,6 @@ $disabledservices = @(
 "LanmanWorkstation"
 "WerSvc"
 )
-
 $forcestopservices = @(
 "tzautoupdate"
 "BITS"
@@ -133,7 +128,6 @@ $forcestopservices = @(
 "SgrmBroker"
 "SDRSVC"
 )
-
 $manualservices = @(
 "AxInstSV"
 "AppReadiness"
@@ -262,7 +256,6 @@ $manualservices = @(
 "PushToInstall"
 "W32Time"
 )
-
 $autoservices = @(
 "Dhcp"
 "dot3svc"
@@ -465,7 +458,6 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sched
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitDiagnosticLogCollection" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitDumpCollection" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitEnhancedDiagnosticDataWindowsAnalytics" -Type DWord -Value 0
-#disabling scheduled tasks
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null
@@ -490,7 +482,6 @@ write-host "SYSTEM CLEANUP" -ForegroundColor white
 ##################################################
 
 
-#set services to manual/disabled and stops background processes
 write-host "Stopping Services and Processes" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
@@ -512,5 +503,5 @@ Set-Location $env:SystemDrive\
 Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
 start-sleep -seconds 5
 taskkill /IM memreduct.exe /F *>$null
-write-host "done" -ForegroundColor red
+write-host "Done" -ForegroundColor red
 pause

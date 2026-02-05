@@ -315,7 +315,7 @@ bcdedit /set vsmlaunchtype off
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
-netsh int tcp set global timestamps=enabled
+netsh int tcp set global timestamps=enabled | Out-Null
 netsh int teredo set state disabled | Out-Null
 netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled

@@ -315,38 +315,45 @@ bcdedit /set vsmlaunchtype off
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
+netsh int tcp set global timestamps=enabled
 netsh int teredo set state disabled | Out-Null
 netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
-Set-NetTCPSetting -SettingName Internetcustom -EcnCapability enabled
 netsh int tcp set global rsc=enabled | Out-Null
 Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
 netsh int tcp set global nonsackrttresiliency=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -NonSackRttResiliency disabled
-Set-NetTCPSetting -SettingName Internetcustom -NonSackRttResiliency disabled
 netsh int tcp set global maxsynretransmissions=2 | Out-Null
 Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 2
-Set-NetTCPSetting -SettingName internetcustom -MaxSynRetransmissions 2
 netsh int tcp set security mpp=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -MemoryPressureProtection disabled
-Set-NetTCPSetting -SettingName Internetcustom -MemoryPressureProtection disabled 
 netsh int tcp set supplemental template=internet enablecwndrestart=enabled | Out-Null
-netsh int tcp set supplemental template=custom enablecwndrestart=enabled | Out-Null
 netsh int tcp set supplemental Template=Internet CongestionProvider=ctcp | Out-Null
-netsh int tcp set supplemental Template=custom CongestionProvider=ctcp | Out-Null
 Set-NetTCPSetting -SettingName Internet -CongestionProvider CTCP
 Set-NetTCPSetting -SettingName internet -DelayedAckFrequency 2
-Set-NetTCPSetting -SettingName Internetcustom -DelayedAckFrequency 2
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Set-NetOffloadGlobalSetting -Chimney Disabled
 Enable-NetAdapterChecksumOffload -Name *
 Disable-NetAdapterLso -Name *
+Set-NetUDPSetting -SettingName Internet -ChecksumOffload Enabled
+Set-NetUDPSetting -SettingName Internet -EncapsulationOffload Disabled
+Set-NetUDPSetting -SettingName Internet -ReceiveBufferSize 1048576
 write-host "Setting DNS server to 9.9.9.11" -ForegroundColor red
 #sets dns server to quad9's secure and ENC capatible dns
 $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
 foreach ($adapter in $adapters) {
     $interfaceIndex = $adapter.ifIndex
     Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses "9.9.9.11"
+}
+Write-Host "Disabling Nagle Algorithm"
+foreach ($adapter in $adapters) {
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
+    
+    if (-not (Test-Path $regPath)) {
+        New-Item -Path $regPath -Force | Out-Null
+    }
+
+    Set-ItemProperty -Path $regPath -Name "TcpNoDelay" -Value 1
 }
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
@@ -398,8 +405,6 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Force | Out-N
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Name "NonBestEffortLimit" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AFD\Parameters" -Name "FastSendDatagramThreshold" -Type DWord -Value 0x10000
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "EnableConnectionRateLimiting" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "TcpTimedWaitDelay" -Type DWord -Value 0x00000030
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "DefaultTTL" -Type DWord -Value 0x00000064
 #privacy
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 0

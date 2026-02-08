@@ -321,7 +321,6 @@ netsh int tcp set global maxsynretransmissions=2 | Out-Null
 Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 2
 netsh int tcp set security mpp=disabled | Out-Null
 Set-NetTCPSetting -SettingName internet -MemoryPressureProtection disabled
-netsh int tcp set supplemental template=internet enablecwndrestart=enabled | Out-Null
 netsh int tcp set supplemental Template=Internet CongestionProvider=ctcp | Out-Null
 Set-NetTCPSetting -SettingName Internet -CongestionProvider CTCP
 Set-NetTCPSetting -SettingName internet -DelayedAckFrequency 2

@@ -172,9 +172,6 @@ Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Proce
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null
 sc config wuauserv start=disabled > $null
-net stop AppXSvc *>&1 | Out-Null
-net stop InstallService *>&1 | Out-Null
-net stop TokenBroker *>&1 | Out-Null
 net stop BITS *>&1 | Out-Null
 net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null

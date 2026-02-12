@@ -14,246 +14,8 @@ $forcestopprocesses = @(
 "SystemSettingsBroker*"
 )
 $disabledservices = @(
-"tzautoupdate"
-"BITS"
-"wbengine"
-"PeerDistSvc"
-"CDPSvc"
-"DiagTrack"
-"DusmSvc"
-"diagsvc"
-"DPS"
-"WdiServiceHost"
-"WdiSystemHost"
-"DialogBlockingService"
-"MapsBroker"
-"lfsvc"
-"iphlpsvc"
-"MicrosoftEdgeElevationService"
-"edgeupdate"
-"edgeupdatem"
-"MsKeyboardFilter"
-"swprv"
-"uhssvc"
-"ssh-agent"
-"Spooler"
-"PcaSvc"
-"RmSvc"
-"RemoteRegistry"
-"RemoteAccess"
-"LanmanServer"
-"shpamsvc"
-"ScDeviceEnum"
-"SSDPSRV"
-"SysMain"
-"lmhosts"
-"UsoSvc"
-"UevAgentService"
-"VSS"
-"webthreatdefsvc"
-"SDRSVC"
-"WbioSrvc"
-"EventLog"
-"WpnService"
-"WSearch"
-"wisvc"
-"wmiApSrv"
-"WSAIFabricSvc"
-"wuauserv"
-"LanmanWorkstation"
-"WerSvc"
-)
-$forcestopservices = @(
-"tzautoupdate"
-"BITS"
-"wbengine"
-"PeerDistSvc"
-"CDPSvc"
-"DiagTrack"
-"DusmSvc"
-"diagsvc"
-"DPS"
-"WdiServiceHost"
-"WdiSystemHost"
-"DialogBlockingService"
-"MapsBroker"
-"lfsvc"
-"iphlpsvc"
-"MicrosoftEdgeElevationService"
-"edgeupdate"
-"edgeupdatem"
-"MsKeyboardFilter"
-"swprv"
-"uhssvc"
-"ssh-agent"
-"Spooler"
-"PcaSvc"
-"RmSvc"
-"RemoteRegistry"
-"RemoteAccess"
-"LanmanServer"
-"shpamsvc"
-"ScDeviceEnum"
-"SSDPSRV"
-"SysMain"
-"lmhosts"
-"UsoSvc"
-"UevAgentService"
-"VSS"
-"webthreatdefsvc"
-"SDRSVC"
-"WbioSrvc"
-"EventLog"
-"WpnService"
-"WSearch"
-"wisvc"
-"wmiApSrv"
-"WSAIFabricSvc"
-"wuauserv"
-"LanmanWorkstation"
-"WerSvc"
-"AppXSvc"
-"fhsvc"
-"FrameServerMonitor"
-"WaaSMedicSvc"
-"DoSvc"
-"DeviceAssociationService"
-"InstallService"
-"SgrmBroker"
-"SDRSVC"
 )
 $manualservices = @(
-"AxInstSV"
-"AppReadiness"
-"ALG"
-"AppMgmt"
-"COMSysApp"
-"VaultSvc"
-"DmEnrollmentSvc"
-"MSDTC"
-"EapHost"
-"fdPHost"
-"InventorySvc"
-"LxpSvc"
-"lltdsvc"
-"McpManagementService"
-"diagnosticshub.standardcollector.service"
-"cloudidsvc"
-"MSiSCSI"
-"smphost"
-"InstallService"
-"Netlogon"
-"Netman"
-"netprofm"
-"NlaSvc"
-"defragsvc"
-"WpcMonSvc"
-"PNRPsvc"
-"p2psvc"
-"p2pimsvc"
-"PerfHost"
-"pla"
-"PlugPlay"
-"PNRPAutoReg"
-"PrintNotify"
-"wercplsupport"
-"QWAVE"
-"TroubleshootingSvc"
-"RasAuto"
-"RasMan"
-"SessionEnv"
-"TermService"
-"UmRdpService"
-"RpcLocator"
-"RetailDemo"
-"seclogon"
-"SstpSvc"
-"SCPolicySvc"
-"SNMPTrap"
-"SharedRealitySvc"
-"WiaRpc"
-"TieringEngineService"
-"TapiSrv"
-"upnphost"
-"vds"
-"VacSvc"
-"WalletService"
-"wcncsvc"
-"Wecsvc"
-"WManSvc"
-"MixedRealityOpenXRSvc"
-"TrustedInstaller"
-"perceptionsimulation"
-"WinRM"
-"WwanSvc"
-"XblAuthManager"
-"XboxNetApiSvc"
-"XboxGipSvc"
-"XblGameSave"
-"AJRouter"
-"Appinfo"
-"AssignedAccessManagerSvc"
-"BthAvctpSvc"
-"BDESVC"
-"BTAGService"
-"bthserv"
-"camsvc"
-"autotimesvc"
-"CertPropSvc"
-"KeyIso"
-"DsSvc"
-"dcsvc"
-"DeviceAssociationService"
-"DeviceInstall"
-"dmwappushservice"
-"DsmSvc"
-"DevQueryBroker"
-"DisplayEnhancementService"
-"EFS"
-"fhsvc"
-"FDResPub"
-"GameInputSvc"
-"GraphicsPerfSvc"
-"hidserv"
-"IKEEXT"
-"SharedAccess"
-"IpxlatCfgSvc"
-"PolicyAgent"
-"KtmRm"
-"wlpasvc"
-"wlidsvc"
-"SmsRouter"
-"NaturalAuthentication"
-"NcdAutoSetup"
-"NcbService"
-"NcaSvc"
-"NetSetupSvc"
-"CscService"
-"SEMgrSvc"
-"PhoneSvc"
-"WPDBusEnum"
-"SensorDataService"
-"SensrSvc"
-"SensorService"
-"SCardSvr"
-"svsvc"
-"WarpJITSvc"
-"WebClient"
-"WFDSConMgrSvc"
-"FrameServer"
-"FrameServerMonitor"
-"WEPHOSTSVC"
-"StiSvc"
-"LicenseManager"
-"icssvc"
-"spectrum"
-"PushToInstall"
-"W32Time"
-)
-$autoservices = @(
-"Dhcp"
-"dot3svc"
-"WlanSvc"
 )
 
 
@@ -266,7 +28,6 @@ write-host "Stopping Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
-Get-Service -Name $autoservices -ErrorAction SilentlyContinue | Set-Service -StartupType automatic -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 write-host "Releasing Memory" -ForegroundColor red
@@ -315,26 +76,8 @@ netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
 netsh int tcp set global rsc=enabled | Out-Null
 Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
-netsh int tcp set global nonsackrttresiliency=disabled | Out-Null
-Set-NetTCPSetting -SettingName internet -NonSackRttResiliency disabled
-netsh int tcp set global maxsynretransmissions=2 | Out-Null
-Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 2
-netsh int tcp set security mpp=disabled | Out-Null
-Set-NetTCPSetting -SettingName internet -MemoryPressureProtection disabled
-netsh int tcp set supplemental Template=Internet CongestionProvider=ctcp | Out-Null
-Set-NetTCPSetting -SettingName Internet -CongestionProvider CTCP
-Set-NetTCPSetting -SettingName internet -DelayedAckFrequency 2
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
-Set-NetOffloadGlobalSetting -Chimney Disabled
 Enable-NetAdapterChecksumOffload -Name *
-Disable-NetAdapterLso -Name *
-write-host "Setting DNS server to 9.9.9.11" -ForegroundColor red
-#sets dns server to quad9's secure and ENC capatible dns
-$adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
-foreach ($adapter in $adapters) {
-    $interfaceIndex = $adapter.ifIndex
-    Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses "9.9.9.11"
-}
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
 foreach ($adapter in $adapters) {
     $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
@@ -396,47 +139,7 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Force | Out-N
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Name "NonBestEffortLimit" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AFD\Parameters" -Name "FastSendDatagramThreshold" -Type DWord -Value 0x10000
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "EnableConnectionRateLimiting" -Type DWord -Value 0
-#privacy
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEverEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SilentInstalledAppsEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" -Name "EnableMDNS" -Type DWord -Value 0
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet" -Name "EnableActiveProbing" -Type DWord -Value 0
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Wifi\AllowWiFiHotSpotReporting" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Wifi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Wifi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 0
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Messenger\Client" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Messenger\Client" -Name "CEIP" -Type DWord -Value 2
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\PCHealth\ErrorReporting" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\PCHealth\ErrorReporting" -Name "DoReport" -Type DWord -Value 0
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent" -Name "DefaultConsent" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\Windows Error Reporting" -Name "DontSendAdditionalData" -Type DWord -Value 1
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance" -Name "MaintenanceDisabled" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitDiagnosticLogCollection" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitDumpCollection" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "LimitEnhancedDiagnosticDataWindowsAnalytics" -Type DWord -Value 0
+#
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null
@@ -464,7 +167,6 @@ write-host "Stopping Services and Processes" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
-Get-Service -Name $autoservices -ErrorAction SilentlyContinue | Set-Service -StartupType automatic -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 sc config BITS start=disabled > $null

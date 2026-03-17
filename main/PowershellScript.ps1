@@ -172,7 +172,6 @@ write-host "SYSTEM CLEANUP" -ForegroundColor white
 write-host "Stopping Services and Processes" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 sc config BITS start=disabled > $null

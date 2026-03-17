@@ -14,10 +14,19 @@ $forcestopprocesses = @(
 "SystemSettingsBroker*"
 )
 $disabledservices = @(
+"BITS"
+"DoSvc"
+"SysMain"
+"UsoSvc"
+"wuauserv"
 )
-$manualservices = @(
+$forcestopservices = @(
+"BITS"
+"DoSvc"
+"SysMain"
+"UsoSvc"
+"wuauserv"
 )
-
 
 ######################################################
 write-host "SYSTEM MAINTENANCE" -ForegroundColor white
@@ -27,7 +36,6 @@ write-host "SYSTEM MAINTENANCE" -ForegroundColor white
 write-host "Stopping Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 write-host "Releasing Memory" -ForegroundColor red
@@ -90,8 +98,6 @@ foreach ($adapter in $adapters) {
 }
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchBoxTaskbarMode" -Value 0
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type DWord -Value 0

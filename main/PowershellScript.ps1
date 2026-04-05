@@ -71,12 +71,14 @@ bcdedit /deletevalue useplatformclock *>$null
 bcdedit /deletevalue tscsyncpolicy *>$null
 bcdedit /deletevalue x2apicpolicy *>$null
 bcdedit /deletevalue vsmlaunchtype *>$null
+bcdedit /deletevalue hypervisorlaunchtype *>$null
 bcdedit /set useplatformtick yes *>$null #//DANGEROUS!!//
 bcdedit /set disabledynamictick yes *>$null
 bcdedit /set useplatformclock no *>$null #//DANGEROUS!!//
 bcdedit /set tscsyncpolicy legacy *>$null
 bcdedit /set x2apicpolicy Enable *>$null
 bcdedit /set vsmlaunchtype off *>$null
+bcdedit /set hypervisorlaunchtype off *>$null
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *

@@ -62,19 +62,21 @@ write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 write-host "Disabling Hibernation" -ForegroundColor red
 powercfg.exe /hibernate off
+write-host "Disabling memory compression" -ForegroundColor red
+Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
 write-host "Changing Boot Settings" -ForegroundColor red
-bcdedit /deletevalue useplatformtick
-bcdedit /deletevalue disabledynamictick
-bcdedit /deletevalue useplatformclock
-bcdedit /deletevalue tscsyncpolicy
-bcdedit /deletevalue x2apicpolicy
-bcdedit /deletevalue vsmlaunchtype
-bcdedit /set useplatformtick yes #//DANGEROUS!!//
-bcdedit /set disabledynamictick yes
-bcdedit /set useplatformclock no #//DANGEROUS!!//
-bcdedit /set tscsyncpolicy legacy
-bcdedit /set x2apicpolicy Enable
-bcdedit /set vsmlaunchtype off
+bcdedit /deletevalue useplatformtick *>$null
+bcdedit /deletevalue disabledynamictick *>$null
+bcdedit /deletevalue useplatformclock *>$null
+bcdedit /deletevalue tscsyncpolicy *>$null
+bcdedit /deletevalue x2apicpolicy *>$null
+bcdedit /deletevalue vsmlaunchtype *>$null
+bcdedit /set useplatformtick yes *>$null #//DANGEROUS!!//
+bcdedit /set disabledynamictick yes *>$null
+bcdedit /set useplatformclock no *>$null #//DANGEROUS!!//
+bcdedit /set tscsyncpolicy legacy *>$null
+bcdedit /set x2apicpolicy Enable *>$null
+bcdedit /set vsmlaunchtype off *>$null
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
@@ -109,6 +111,9 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEna
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Type DWord -Value 0
 $SystemMemory = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $SystemMemory
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsRunInBackground" -Type DWord -Value 2
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowSleepOption" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0
@@ -119,6 +124,7 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control\PriorityControl" -Nam
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Type DWord -Value 2
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "disableClearType" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "EnableAeroPeek" -Type DWord -Value 0
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
 #Windows update
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0

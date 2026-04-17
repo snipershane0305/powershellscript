@@ -1,8 +1,5 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
-Import-Module ScheduledTasks 2>$null
-Import-Module NetAdapter 2>$null
-Import-Module NetTCPIP 2>$null 
-Import-Module DnsClient 2>$null
+Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
 $forcestopprocesses = @(
 "ApplicationFrameHost*"
 "dllhost*"
@@ -35,15 +32,7 @@ write-host "SYSTEM MAINTENANCE" -ForegroundColor white
 write-host "Stopping Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
-write-host "Releasing Memory" -ForegroundColor red
-Set-Location $env:SystemDrive\
-if (Test-Path ".\memreduct.exe") {
-    Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
-    Start-Sleep -Seconds 5
-    taskkill /IM memreduct.exe /F *>$null
-}
 write-host "Trimming System Drive" -ForegroundColor red
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
 Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
@@ -90,16 +79,14 @@ Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
-$adapters = Get-NetAdapter -Physical | Where-Object { $_.Status -eq "Up" }
-foreach ($adapter in $adapters) {
-    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
-    
-    if (-not (Test-Path $regPath)) {
-        New-Item -Path $regPath -Force | Out-Null
+Get-NetAdapter -Physical |
+    Where-Object Status -eq "Up" |
+    ForEach-Object {
+        if (-not (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)")) {
+            New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
-
-    Set-ItemProperty -Path $regPath -Name "TcpNoDelay" -Value 1
-}
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0
@@ -157,7 +144,6 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Force | Out-N
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Name "NonBestEffortLimit" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AFD\Parameters" -Name "FastSendDatagramThreshold" -Type DWord -Value 0x10000
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "EnableConnectionRateLimiting" -Type DWord -Value 0
-#
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null
@@ -183,7 +169,6 @@ write-host "SYSTEM CLEANUP" -ForegroundColor white
 write-host "Stopping Services and Processes" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Stop-Service $forcestopservices -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null

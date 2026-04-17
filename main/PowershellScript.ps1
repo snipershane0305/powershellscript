@@ -90,6 +90,7 @@ Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
+$adapters = Get-NetAdapter -Physical | Where-Object { $_.Status -eq "Up" }
 foreach ($adapter in $adapters) {
     $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($adapter.InterfaceGuid)"
     
@@ -172,7 +173,6 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "M
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "Microsoft-Windows-DiskDiagnosticResolver" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClient" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 
 
 ##################################################

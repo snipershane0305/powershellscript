@@ -1,27 +1,279 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
 $forcestopprocesses = @(
-"ApplicationFrameHost*"
-"dllhost*"
-"SecurityHealthService*"
-"WmiPrvSE*"
-"taskhostw*"
-"DataExchangeHost*"
-"smartscreen*"
-"SystemSettingsBroker*"
+    "ApplicationFrameHost*"
+    "dllhost*"
+    "SecurityHealthService*"
+    "WmiPrvSE*"
+    "taskhostw*"
+    "DataExchangeHost*"
+    "smartscreen*"
+    "SystemSettingsBroker*"
 )
 $disabledservices = @(
-"BITS"
-"SysMain"
-"UsoSvc"
-"wuauserv"
+    #Windows Update
+    "wuauserv"                           # Windows Update
+    "BITS"                               # Background Intelligent Transfer Service
+    "UsoSvc"                             # Update Orchestrator Service
+    "wuqisvc"                            # Usage & Quality Insights
+    #Remote Access
+    "TermService"                        # Remote Desktop Services
+    "UmRdpService"                       # RDP UserMode Port Redirector
+    "SessionEnv"                         # Remote Desktop Configuration
+    "WinRM"                              # Windows Remote Management
+    "RemoteRegistry"                     # Remote Registry
+    "RemoteAccess"                       # Routing and Remote Access
+    "RasAuto"                            # Remote Access Auto Connection Manager
+    "RasMan"                             # Remote Access Connection Manager
+    "SstpSvc"                            # Secure Socket Tunneling (VPN)
+    #Telemetry
+    "DiagTrack"                          # Connected User Experiences and Telemetry
+    "dmwappushservice"                   # Device Management WAP Push
+    "DmEnrollmentSvc"                    # Device Management Enrollment
+    "diagsvc"                            # Diagnostic Execution Service
+    "TroubleshootingSvc"                 # Recommended Troubleshooting Service
+    "wisvc"                              # Windows Insider Service
+    #Xbox
+    "XblAuthManager"                     # Xbox Live Auth Manager
+    "XblGameSave"                        # Xbox Live Game Save
+    "XboxGipSvc"                         # Xbox Accessory Management
+    "XboxNetApiSvc"                      # Xbox Live Networking Service
+    #Bluetooth
+    "BTAGService"                        # Bluetooth Audio Gateway
+    "BthAvctpSvc"                        # AVCTP Service
+    "bthserv"                            # Bluetooth Support Service
+    "RtkBtManServ"                       # Realtek Bluetooth Device Manager
+    #Mobile/Cellular
+    "WwanSvc"                            # WWAN AutoConfig
+    "autotimesvc"                        # Cellular Time Sync
+    "icssvc"                             # Windows Mobile Hotspot
+    "SmsRouter"                          # Windows SMS Router
+    "McmSvc"                             # Mobile Connectivity Management
+    "PhoneSvc"                           # Phone Service
+    "SEMgrSvc"                           # Payments and NFC/SE Manager
+    #Hyper-V
+    "HvHost"                             # HV Host Service
+    "vmicguestinterface"                 # Hyper-V Guest Service Interface
+    "vmicheartbeat"                      # Hyper-V Heartbeat Service
+    "vmickvpexchange"                    # Hyper-V Data Exchange
+    "vmicrdv"                            # Hyper-V Remote Desktop Virtualization
+    "vmicshutdown"                       # Hyper-V Guest Shutdown
+    "vmictimesync"                       # Hyper-V Time Synchronization
+    "vmicvmsession"                      # Hyper-V PowerShell Direct
+    "vmicvss"                            # Hyper-V Volume Shadow Copy Requestor
+    "AppVClient"                         # Microsoft App-V Client
+    #Edge/Google
+    "edgeupdate"                         # Microsoft Edge Update
+    "edgeupdatem"                        # Microsoft Edge Update
+    "MicrosoftEdgeElevationService"      # Microsoft Edge Elevation
+    "GoogleChromeElevationService"       # Google Chrome Elevation Service
+    #Smart Card
+    "SCardSvr"                           # Smart Card
+    "ScDeviceEnum"                       # Smart Card Device Enumeration
+    "SCPolicySvc"                        # Smart Card Removal Policy
+    "CertPropSvc"                        # Certificate Propagation
+    #Biometrics
+    "WbioSrvc"                           # Windows Biometric Service
+    "NaturalAuthentication"              # Natural Authentication
+    #Printer
+    "Spooler"                            # Print Spooler
+    "PrintNotify"                        # Printer Extensions and Notifications
+    "PrintScanBrokerService"             # Print Scan Broker
+    #Sensors
+    "SensorDataService"                  # Sensor Monitoring
+    "SensorService"                      # Sensor Monitoring
+    "SensrSvc"                           # Sensor Monitoring
+    #Backup
+    "SDRSVC"                             # Windows Backup
+    "wbengine"                           # Block Level Backup Engine
+    "fhsvc"                              # File History Service
+    "refsdedupsvc"                       # ReFS Dedup Service
+    #Storage
+    "VSS"                                # Volume Shadow Copy (system restore)
+    "swprv"                              # Software Shadow Copy Provider
+    "TieringEngineService"               # Storage Tiers Management
+    #Camera
+    "FrameServer"                        # Windows Camera Frame Server
+    "FrameServerMonitor"                 # Windows Camera Frame Server Monitor
+    "StiSvc"                             # Windows Image Acquisition
+    "WiaRpc"                             # Still Image Acquisition Events
+    #Disabled
+    "RetailDemo"                         # Retail Demo Service
+    "WpcMonSvc"                          # Parental Controls
+    "WalletService"                      # Wallet
+    "MapsBroker"                         # Downloaded Maps Manager
+    "lfsvc"                              # Geolocation Service
+    "cloudidsvc"                         # Microsoft Cloud Identity Service
+    "shpamsvc"                           # Shared PC Account Manager
+    "UevAgentService"                    # User Experience Virtualization
+    "wcncsvc"                            # Windows Connect Now
+    "SNMPTrap"                           # SNMP Trap
+    "PeerDistSvc"                        # BranchCache
+    "LocalKdc"                           # Kerberos Local KDC
+    "WManSvc"                            # Windows Management Service
+    "WSAIFabricSvc"                      # WSAIFabric (AI companion service)
+    "ADPSvc"                             # Aggregated Data Platform
+    "dcsvc"                              # Declared Configuration Service
+    "hpatchmon"                          # Hotpatch Monitoring
+    "PushToInstall"                      # Windows PushToInstall
+    "smphost"                            # Storage Spaces SMP
+    "CscService"                         # Offline Files
+    "tzautoupdate"                       # Auto Time Zone Updater
+    "wlpasvc"                            # Local Profile Assistant
+    "McpManagementService"               # McpManagementService
+    "DsSvc"                              # Data Sharing Service
+    "NetTcpPortSharing"                  # Net.Tcp Port Sharing
+    "KtmRm"                              # KtmRm for DTC
+    "SysMain"                            # SysMain/SuperFetch
+    "WSearch"                            # Windows Search
+    "DisplayEnhancementService"          # Display Enhancement (HDR auto-tune)
+    "AssignedAccessManagerSvc"           # Assigned Access (kiosk mode)
+    "CDPSvc"                             # Connected Devices Platform Service
+    "DPS"                                # Diagnostic Policy Service
+    "WdiSystemHost"                      # Diagnostic System Host
+    "WdiServiceHost"                     # Diagnostic Service Host
+    "iphlpsvc"                           # IP Helper
+    "RmSvc"                              # Radio Management Service
+    "LanmanServer"                       # Server
+    "lmhosts"                            # TCP/IP NetBIOS Helper
+    "EventLog"                           # Event Log
+    "LanmanWorkstation"                  # Workstation
+    "WerSvc"                             # Windows Error Reporting Service
+    "SSDPSRV"                            # SSDP Discovery
 )
 $forcestopservices = @(
-"BITS"
-"DoSvc"
-"SysMain"
-"UsoSvc"
-"wuauserv"
+    #Windows Update
+    "wuauserv"                           # Windows Update
+    "BITS"                               # Background Intelligent Transfer Service
+    "UsoSvc"                             # Update Orchestrator Service
+    "wuqisvc"                            # Usage & Quality Insights
+    #Remote Access
+    "TermService"                        # Remote Desktop Services
+    "UmRdpService"                       # RDP UserMode Port Redirector
+    "SessionEnv"                         # Remote Desktop Configuration
+    "WinRM"                              # Windows Remote Management
+    "RemoteRegistry"                     # Remote Registry
+    "RemoteAccess"                       # Routing and Remote Access
+    "RasAuto"                            # Remote Access Auto Connection Manager
+    "RasMan"                             # Remote Access Connection Manager
+    "SstpSvc"                            # Secure Socket Tunneling (VPN)
+    #Telemetry
+    "DiagTrack"                          # Connected User Experiences and Telemetry
+    "dmwappushservice"                   # Device Management WAP Push
+    "DmEnrollmentSvc"                    # Device Management Enrollment
+    "diagsvc"                            # Diagnostic Execution Service
+    "TroubleshootingSvc"                 # Recommended Troubleshooting Service
+    "wisvc"                              # Windows Insider Service
+    #Xbox
+    "XblAuthManager"                     # Xbox Live Auth Manager
+    "XblGameSave"                        # Xbox Live Game Save
+    "XboxGipSvc"                         # Xbox Accessory Management
+    "XboxNetApiSvc"                      # Xbox Live Networking Service
+    #Bluetooth
+    "BTAGService"                        # Bluetooth Audio Gateway
+    "BthAvctpSvc"                        # AVCTP Service
+    "bthserv"                            # Bluetooth Support Service
+    "RtkBtManServ"                       # Realtek Bluetooth Device Manager
+    #Mobile/Cellular
+    "WwanSvc"                            # WWAN AutoConfig
+    "autotimesvc"                        # Cellular Time Sync
+    "icssvc"                             # Windows Mobile Hotspot
+    "SmsRouter"                          # Windows SMS Router
+    "McmSvc"                             # Mobile Connectivity Management
+    "PhoneSvc"                           # Phone Service
+    "SEMgrSvc"                           # Payments and NFC/SE Manager
+    #Hyper-V
+    "HvHost"                             # HV Host Service
+    "vmicguestinterface"                 # Hyper-V Guest Service Interface
+    "vmicheartbeat"                      # Hyper-V Heartbeat Service
+    "vmickvpexchange"                    # Hyper-V Data Exchange
+    "vmicrdv"                            # Hyper-V Remote Desktop Virtualization
+    "vmicshutdown"                       # Hyper-V Guest Shutdown
+    "vmictimesync"                       # Hyper-V Time Synchronization
+    "vmicvmsession"                      # Hyper-V PowerShell Direct
+    "vmicvss"                            # Hyper-V Volume Shadow Copy Requestor
+    "AppVClient"                         # Microsoft App-V Client
+    #Edge/Google
+    "edgeupdate"                         # Microsoft Edge Update
+    "edgeupdatem"                        # Microsoft Edge Update
+    "MicrosoftEdgeElevationService"      # Microsoft Edge Elevation
+    "GoogleChromeElevationService"       # Google Chrome Elevation Service
+    #Smart Card
+    "SCardSvr"                           # Smart Card
+    "ScDeviceEnum"                       # Smart Card Device Enumeration
+    "SCPolicySvc"                        # Smart Card Removal Policy
+    "CertPropSvc"                        # Certificate Propagation
+    #Biometrics
+    "WbioSrvc"                           # Windows Biometric Service
+    "NaturalAuthentication"              # Natural Authentication
+    #Printer
+    "Spooler"                            # Print Spooler
+    "PrintNotify"                        # Printer Extensions and Notifications
+    "PrintScanBrokerService"             # Print Scan Broker
+    #Sensors
+    "SensorDataService"                  # Sensor Monitoring
+    "SensorService"                      # Sensor Monitoring
+    "SensrSvc"                           # Sensor Monitoring
+    #Backup
+    "SDRSVC"                             # Windows Backup
+    "wbengine"                           # Block Level Backup Engine
+    "fhsvc"                              # File History Service
+    "refsdedupsvc"                       # ReFS Dedup Service
+    #Storage
+    "VSS"                                # Volume Shadow Copy (system restore)
+    "swprv"                              # Software Shadow Copy Provider
+    "TieringEngineService"               # Storage Tiers Management
+    #Camera
+    "FrameServer"                        # Windows Camera Frame Server
+    "FrameServerMonitor"                 # Windows Camera Frame Server Monitor
+    "StiSvc"                             # Windows Image Acquisition
+    "WiaRpc"                             # Still Image Acquisition Events
+    #Disabled
+    "RetailDemo"                         # Retail Demo Service
+    "WpcMonSvc"                          # Parental Controls
+    "WalletService"                      # Wallet
+    "MapsBroker"                         # Downloaded Maps Manager
+    "lfsvc"                              # Geolocation Service
+    "cloudidsvc"                         # Microsoft Cloud Identity Service
+    "shpamsvc"                           # Shared PC Account Manager
+    "UevAgentService"                    # User Experience Virtualization
+    "wcncsvc"                            # Windows Connect Now
+    "SNMPTrap"                           # SNMP Trap
+    "PeerDistSvc"                        # BranchCache
+    "LocalKdc"                           # Kerberos Local KDC
+    "WManSvc"                            # Windows Management Service
+    "WSAIFabricSvc"                      # WSAIFabric (AI companion service)
+    "ADPSvc"                             # Aggregated Data Platform
+    "dcsvc"                              # Declared Configuration Service
+    "hpatchmon"                          # Hotpatch Monitoring
+    "PushToInstall"                      # Windows PushToInstall
+    "smphost"                            # Storage Spaces SMP
+    "CscService"                         # Offline Files
+    "tzautoupdate"                       # Auto Time Zone Updater
+    "wlpasvc"                            # Local Profile Assistant
+    "McpManagementService"               # McpManagementService
+    "DsSvc"                              # Data Sharing Service
+    "NetTcpPortSharing"                  # Net.Tcp Port Sharing
+    "KtmRm"                              # KtmRm for DTC
+    "SysMain"                            # SysMain/SuperFetch
+    "WSearch"                            # Windows Search
+    "DisplayEnhancementService"          # Display Enhancement (HDR auto-tune)
+    "AssignedAccessManagerSvc"           # Assigned Access (kiosk mode)
+    "CDPSvc"                             # Connected Devices Platform Service
+    "DPS"                                # Diagnostic Policy Service
+    "WdiSystemHost"                      # Diagnostic System Host
+    "WdiServiceHost"                     # Diagnostic Service Host
+    "iphlpsvc"                           # IP Helper
+    "RmSvc"                              # Radio Management Service
+    "LanmanServer"                       # Server
+    "lmhosts"                            # TCP/IP NetBIOS Helper
+    "EventLog"                           # Event Log
+    "LanmanWorkstation"                  # Workstation
+    "WerSvc"                             # Windows Error Reporting Service
+    "SSDPSRV"                            # SSDP Discovery
+    "InstallService"                     # Microsoft Store Install Service
+    "TokenBroker"                        # Web Account Manager
+    "WFDSConMgrSvc"                      # Wi-Fi Direct Services Connection Manager Service
 )
 
 ######################################################

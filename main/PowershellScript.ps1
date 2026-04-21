@@ -285,9 +285,6 @@ write-host "Stopping Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
-write-host "Trimming System Drive" -ForegroundColor red
-Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -ReTrim
-Optimize-Volume -DriveLetter ($env:SystemDrive).Substring(0,1) -SlabConsolidate
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null

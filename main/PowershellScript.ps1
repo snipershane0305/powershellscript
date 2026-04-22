@@ -275,26 +275,54 @@ $forcestopservices = @(
     "TokenBroker"                        # Web Account Manager
     "WFDSConMgrSvc"                      # Wi-Fi Direct Services Connection Manager Service
 )
-
-######################################################
-write-host "SYSTEM MAINTENANCE" -ForegroundColor white
-######################################################
-
-
-write-host "Stopping Services" -ForegroundColor red
+$manualservices = @(
+    "AxInstSV"
+    "AppReadiness"
+    "ALG"
+    "AppMgmt"
+    "camsvc"
+    "COMSysApp"
+    "VaultSvc"
+    "MSDTC"
+    "EapHost"
+    "fdPHost"
+    "InventorySvc"
+    "LxpSvc"
+    "lltdsvc"
+    "MSiSCSI"
+    "InstallService"
+    "Netlogon"
+    "Netman"
+    "netprofm"
+    "NlaSvc"
+    "defragsvc"
+    "PerfHost"
+    "pla"
+    "PlugPlay"
+    "wercplsupport"
+    "QWAVE"
+    "RpcLocator"
+    "seclogon"
+    "TapiSrv"
+    "upnphost"
+    "vds"
+    "TokenBroker"
+    "Wecsvc"
+    "TrustedInstaller"
+    "perceptionsimulation"
+    "FontCache3.0.0.0"
+    "WpnService"
+    "wmiApSrv"
+    "ZTHELPER"
+)
+write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
-
-
-########################################################
-write-host "SYSTEM CONFIGURATION" -ForegroundColor white
-########################################################
-
-
 write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 write-host "Disabling Hibernation" -ForegroundColor red
@@ -408,23 +436,18 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "M
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "Microsoft-Windows-DiskDiagnosticResolver" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClient" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
-
-
-##################################################
-write-host "SYSTEM CLEANUP" -ForegroundColor white
-##################################################
-
-
-write-host "Stopping Services and Processes" -ForegroundColor red
+write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null
 sc config wuauserv start=disabled > $null
 net stop BITS *>&1 | Out-Null
 net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null
+net stop DoSvc *>&1 | Out-Null
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
 if (Test-Path ".\memreduct.exe") {

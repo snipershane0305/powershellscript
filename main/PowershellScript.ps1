@@ -9,6 +9,7 @@ $forcestopprocesses = @(
     "DataExchangeHost*"
     "smartscreen*"
     "SystemSettingsBroker*"
+    "CrossDevice*"
 )
 $disabledservices = @(
     #Windows Update

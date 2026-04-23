@@ -316,10 +316,12 @@ $manualservices = @(
     "ZTHELPER"
 )
 write-host "Setting Services" -ForegroundColor red
+Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
+Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
@@ -437,10 +439,16 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "M
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClient" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
 write-host "Setting Services" -ForegroundColor red
+Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
+Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+net stop BITS *>&1 | Out-Null
+net stop UsoSvc *>&1 | Out-Null
+net stop wuauserv *>&1 | Out-Null
+net stop DoSvc *>&1 | Out-Null
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null
 sc config wuauserv start=disabled > $null

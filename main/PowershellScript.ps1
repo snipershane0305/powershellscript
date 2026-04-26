@@ -273,7 +273,6 @@ $forcestopservices = @(
     "WerSvc"                             # Windows Error Reporting Service
     "SSDPSRV"                            # SSDP Discovery
     "InstallService"                     # Microsoft Store Install Service
-    "TokenBroker"                        # Web Account Manager
     "WFDSConMgrSvc"                      # Wi-Fi Direct Services Connection Manager Service
 )
 $manualservices = @(

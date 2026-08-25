@@ -133,7 +133,6 @@ $disabledservices = @(
     "DPS"                                # Diagnostic Policy Service
     "WdiSystemHost"                      # Diagnostic System Host
     "WdiServiceHost"                     # Diagnostic Service Host
-    "iphlpsvc"                           # IP Helper
     "RmSvc"                              # Radio Management Service
     "LanmanServer"                       # Server
     "lmhosts"                            # TCP/IP NetBIOS Helper

@@ -1,5 +1,5 @@
 This repository is for my powershell script that was made to configure many settings to improve the privacy and performance of windows and to keep these settings persistent because windows loves reverting changes randomly.
-This script changes many things that can cause problems so make sure this wont disable anything you need. You may need to set powershell Execution Policy to unrestricted with the `Set-ExecutionPolicy -Scope CurrentUser Unrestricted` or `Unblock-File -Path ""C:\PowershellScript.ps1"` command and maybe add it to your exclusion list in windows defender.
+This script changes many things that can cause problems so make sure this wont disable anything you need. You may need to set powershell Execution Policy to unrestricted with the `Set-ExecutionPolicy -Scope CurrentUser Unrestricted` or `Unblock-File -Path "C:\PowershellScript.ps1"` command and maybe add it to your exclusion list in windows defender.
 
 This may improve some system stability, performance, and network performance by setting more performant configurations and lowering the system resources at idle but you WONT see big performance impact in GAMES if there are no previous issues with windows. Video game performance is more impacted by your specific hardware and clock speeds. Consider overclocking/undervolting and better cooling solutions for better performance in GAMES!
 

@@ -1,12 +1,6 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
 $forcestopprocesses = @(
-    "ApplicationFrameHost*"
-    "dllhost*"
-    "SecurityHealthService*"
-    "WmiPrvSE*"
-    "taskhostw*"
-    "DataExchangeHost*"
     "smartscreen*"
     "SystemSettingsBroker*"
     "CrossDevice*"
@@ -136,7 +130,6 @@ $disabledservices = @(
     "RmSvc"                              # Radio Management Service
     "LanmanServer"                       # Server
     "lmhosts"                            # TCP/IP NetBIOS Helper
-    "EventLog"                           # Event Log
     "LanmanWorkstation"                  # Workstation
     "WerSvc"                             # Windows Error Reporting Service
     "SSDPSRV"                            # SSDP Discovery
@@ -267,7 +260,6 @@ $forcestopservices = @(
     "RmSvc"                              # Radio Management Service
     "LanmanServer"                       # Server
     "lmhosts"                            # TCP/IP NetBIOS Helper
-    "EventLog"                           # Event Log
     "LanmanWorkstation"                  # Workstation
     "WerSvc"                             # Windows Error Reporting Service
     "SSDPSRV"                            # SSDP Discovery
@@ -352,8 +344,9 @@ netsh int tcp set global timestamps=enabled | Out-Null
 netsh int teredo set state disabled | Out-Null
 netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
-netsh int tcp set global rsc=enabled | Out-Null
-Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled
+netsh int tcp set global rsc=disabled | Out-Null
+Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
+Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
@@ -424,6 +417,23 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Force | Out-N
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Name "NonBestEffortLimit" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AFD\Parameters" -Name "FastSendDatagramThreshold" -Type DWord -Value 0x10000
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "EnableConnectionRateLimiting" -Type DWord -Value 0
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Type DWord -Value 0
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" -Name "EnableMDNS" -Type DWord -Value 0
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DisableOneSettingsDownloads" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet" -Name "EnableActiveProbing" -Type DWord -Value 0
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkConnectivityStatusIndicator" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkConnectivityStatusIndicator" -Name "NoActiveProbe" -Type DWord -Value 1
+#WPAD
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" -Name "DisableWpad" -Type DWord -Value 1
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "AutoDetect" -Type DWord -Value 0
+New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Force | Out-Null
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type DWord -Value 1
+
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null

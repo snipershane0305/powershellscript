@@ -133,6 +133,9 @@ $disabledservices = @(
     "LanmanWorkstation"                  # Workstation
     "WerSvc"                             # Windows Error Reporting Service
     "SSDPSRV"                            # SSDP Discovery
+    #WS-Discovery/SSDP services for Windows network discovery
+    "fdPHost"
+    "FDResPub"
 )
 $forcestopservices = @(
     #Windows Update
@@ -265,6 +268,9 @@ $forcestopservices = @(
     "SSDPSRV"                            # SSDP Discovery
     "InstallService"                     # Microsoft Store Install Service
     "WFDSConMgrSvc"                      # Wi-Fi Direct Services Connection Manager Service
+    #WS-Discovery/SSDP services for Windows network discovery
+    "fdPHost"
+    "FDResPub"
 )
 $manualservices = @(
     "AxInstSV"
@@ -276,7 +282,6 @@ $manualservices = @(
     "VaultSvc"
     "MSDTC"
     "EapHost"
-    "fdPHost"
     "InventorySvc"
     "LxpSvc"
     "lltdsvc"

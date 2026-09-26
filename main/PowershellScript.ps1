@@ -363,6 +363,15 @@ Get-NetAdapter -Physical |
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
+$hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+$blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com"
+
+foreach ($domain in $blocklist) {
+    if ((Get-Content $hostsPath) -notcontains "0.0.0.0 $domain") {
+        Add-Content -Path $hostsPath -Value "0.0.0.0 $domain"
+    }
+}
+Clear-DnsClientCache
 write-host "Changing Registry Settings" -ForegroundColor red
 #registry changes
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0

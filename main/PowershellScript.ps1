@@ -312,21 +312,24 @@ $manualservices = @(
     "ZTHELPER"
 )
 write-host "Setting Services" -ForegroundColor red
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
+
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
+
 write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
+
 write-host "Disabling Hibernation" -ForegroundColor red
 powercfg.exe /hibernate off
+
 write-host "Disabling memory compression" -ForegroundColor red
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
+
 write-host "Changing Boot Settings" -ForegroundColor red
 bcdedit /deletevalue useplatformtick *>$null
 bcdedit /deletevalue disabledynamictick *>$null
@@ -342,6 +345,7 @@ bcdedit /set tscsyncpolicy legacy *>$null
 bcdedit /set x2apicpolicy Enable *>$null
 bcdedit /set vsmlaunchtype off *>$null
 bcdedit /set hypervisorlaunchtype off *>$null
+
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
@@ -354,6 +358,7 @@ Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
 Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
+
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
 Get-NetAdapter -Physical |
     Where-Object Status -eq "Up" |
@@ -363,17 +368,20 @@ Get-NetAdapter -Physical |
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
+Write-Host "Editing host file" -ForegroundColor red    
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com"
-
+$changed = $false
 foreach ($domain in $blocklist) {
     if ((Get-Content $hostsPath) -notcontains "0.0.0.0 $domain") {
         Add-Content -Path $hostsPath -Value "0.0.0.0 $domain"
+        $changed = $true
     }
 }
-Clear-DnsClientCache
+if ($changed) { Clear-DnsClientCache }
+
 write-host "Changing Registry Settings" -ForegroundColor red
-#registry changes
+#Registry changes
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type DWord -Value 0
@@ -428,7 +436,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearchin
 #Microsoft Store automatic app updates (2 = off, 4 = on)
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" -Name "AutoDownload" -Type DWord -Value 2
-#network
+#Network
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 0xffffffff
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched" -Name "NonBestEffortLimit" -Type DWord -Value 0
@@ -445,7 +453,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "AutoDetect" -Type DWord -Value 0
 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Force | Out-Null
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type DWord -Value 1
-#scheduled tasks
+
+#Scheduled tasks
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null
@@ -463,8 +472,8 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "Dm
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdates" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdatesAsUser" | Out-Null
+
 write-host "Setting Services" -ForegroundColor red
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Stop-Service $forcestopservices -force 2>$null

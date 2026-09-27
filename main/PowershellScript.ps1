@@ -371,7 +371,7 @@ Get-NetAdapter -Physical |
     }
 Write-Host "Editing host file" -ForegroundColor red    
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-$blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com"
+$blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com", "inputsuggestions.msdxcdn.microsoft.com"
 $changed = $false
 foreach ($domain in $blocklist) {
     if ((Get-Content $hostsPath) -notcontains "0.0.0.0 $domain") {

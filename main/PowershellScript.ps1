@@ -323,6 +323,7 @@ Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recur
 
 write-host "Disabling Powershell Telemetry" -ForegroundColor red
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
+[System.Environment]::SetEnvironmentVariable('POWERSHELL_UPDATECHECK', 'Off', 'Machine')
 
 write-host "Disabling Hibernation" -ForegroundColor red
 powercfg.exe /hibernate off

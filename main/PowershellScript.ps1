@@ -365,6 +365,11 @@ Get-NetAdapter -Physical |
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
+
+Write-Host "Disabling NetBIOS" -ForegroundColor red
+Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
+Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null
+
 Write-Host "Editing host file" -ForegroundColor red    
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com", "inputsuggestions.msdxcdn.microsoft.com"
@@ -450,6 +455,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "AutoDetect" -Type DWord -Value 0
 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Force | Out-Null
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type DWord -Value 1
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "DisableSmartNameResolution" -Type DWord -Value 1
 
 #Scheduled tasks
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null

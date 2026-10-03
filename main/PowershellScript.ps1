@@ -332,14 +332,12 @@ write-host "Disabling memory compression" -ForegroundColor red
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
 
 write-host "Changing Boot Settings" -ForegroundColor red
-bcdedit /deletevalue useplatformtick *>$null
 bcdedit /deletevalue disabledynamictick *>$null
 bcdedit /deletevalue useplatformclock *>$null
 bcdedit /deletevalue tscsyncpolicy *>$null
 bcdedit /deletevalue x2apicpolicy *>$null
 bcdedit /deletevalue vsmlaunchtype *>$null
 bcdedit /deletevalue hypervisorlaunchtype *>$null
-bcdedit /set useplatformtick yes *>$null #//DANGEROUS!!//
 bcdedit /set disabledynamictick yes *>$null
 bcdedit /set useplatformclock no *>$null #//DANGEROUS!!//
 bcdedit /set tscsyncpolicy legacy *>$null

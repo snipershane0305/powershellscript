@@ -348,6 +348,8 @@ netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
 netsh int tcp set global timestamps=enabled | Out-Null
 netsh int teredo set state disabled | Out-Null
+netsh int 6to4 set state disabled | Out-Null
+netsh int isatap set state disabled | Out-Null
 netsh int tcp set global ecncapability=enable | Out-Null
 Set-NetTCPSetting -SettingName internet -EcnCapability enabled
 netsh int tcp set global rsc=disabled | Out-Null
@@ -355,6 +357,7 @@ Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
 Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
+Set-NetTCPSetting -SettingName Internet -DelayedAckFrequency 1
 
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
 Get-NetAdapter -Physical |
@@ -364,6 +367,7 @@ Get-NetAdapter -Physical |
             New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" | Out-Null
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpDelAckTicks" -Value 1
     }
 
 Write-Host "Disabling NetBIOS" -ForegroundColor red

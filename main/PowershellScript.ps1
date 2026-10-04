@@ -357,7 +357,6 @@ Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled
 Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
-Set-NetTCPSetting -SettingName Internet -DelayedAckFrequency 1
 
 Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
 Get-NetAdapter -Physical |

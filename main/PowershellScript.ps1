@@ -508,6 +508,15 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "Dm
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdates" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdatesAsUser" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device User"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataFlushing"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataReceiver"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "ReconcileFeatures"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\WwanSvc\" -TaskName "OobeDiscovery"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sustainability\" -TaskName "PowerGridForecastTask"
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Hotpatch\" -TaskName "Monitoring"
+
 
 write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null

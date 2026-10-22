@@ -1,10 +1,5 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
-$forcestopprocesses = @(
-    "smartscreen*"
-    "SystemSettingsBroker*"
-    "CrossDevice*"
-)
 $disabledservices = @(
     #Windows Update
     "wuauserv"                           # Windows Update
@@ -498,41 +493,32 @@ Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskN
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Maps" -TaskName "MapsUpdateTask" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Application Experience" -TaskName "MareBackup" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Application Experience" -TaskName "Microsoft Compatibility Appraiser Exp" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Application Experience" -TaskName "StartupAppTask" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Autochk" -TaskName "Proxy" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Customer Experience Improvement Program" -TaskName "Consolidator" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Customer Experience Improvement Program" -TaskName "UsbCeip" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\DiskDiagnostic" -TaskName "Microsoft-Windows-DiskDiagnosticResolver" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClient" | Out-Null
 Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdates" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdatesAsUser" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device User"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataFlushing"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataReceiver"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "ReconcileFeatures"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\WwanSvc\" -TaskName "OobeDiscovery"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sustainability\" -TaskName "PowerGridForecastTask"
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Hotpatch\" -TaskName "Monitoring"
-
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device User" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataFlushing" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataReceiver" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "ReconcileFeatures" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\WwanSvc\" -TaskName "OobeDiscovery" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sustainability\" -TaskName "PowerGridForecastTask" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Hotpatch\" -TaskName "Monitoring" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Speech\" -TaskName "SpeechModelDownloadTask" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "Registration" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "LoginCheck" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\OneSettings\" -TaskName "RefreshCache" | Out-Null
 
 write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $disabledservices -ErrorAction SilentlyContinue | Set-Service -StartupType disabled -force 2>$null
 Stop-Service $forcestopservices -force 2>$null
 Get-Service -Name $manualservices -ErrorAction SilentlyContinue | Set-Service -StartupType manual -force 2>$null
-Get-Process -Name $forcestopprocesses -ErrorAction SilentlyContinue | Stop-Process -force 2>$null
 
 write-host "Stopping Update Services" -ForegroundColor red
-net stop BITS *>&1 | Out-Null
-net stop UsoSvc *>&1 | Out-Null
-net stop wuauserv *>&1 | Out-Null
-net stop DoSvc *>&1 | Out-Null
-sc config BITS start=disabled > $null
-sc config UsoSvc start=disabled > $null
-sc config wuauserv start=disabled > $null
 net stop BITS *>&1 | Out-Null
 net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null

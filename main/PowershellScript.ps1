@@ -529,10 +529,8 @@ net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null
 net stop DoSvc *>&1 | Out-Null
 
-write-host "Killing Smartscreen.exe and WaaSMedicAgent" -ForegroundColor red
+write-host "Killing Smartscreen.exe and usoclient.exe" -ForegroundColor red
 $files = @(
-    "$env:SystemDrive\WINDOWS\uus\AMD64\WaaSMedicAgent.exe",
-    "$env:SystemDrive\WINDOWS\uus\packages\preview\AMD64\MoUsoCoreWorker.exe",
     "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
 )

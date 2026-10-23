@@ -362,7 +362,6 @@ Get-NetAdapter -Physical |
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
-
 Write-Host "Disabling NetBIOS" -ForegroundColor red
 Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
 Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null
@@ -417,6 +416,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -N
 if (-not (Test-Path "HKLM:\SOFTWARE\Microsoft\Input")) { New-Item -Path "HKLM:\SOFTWARE\Microsoft\Input" | Out-Null }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Input" -Name "InputServiceEnabled" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Input" -Name "InputServiceEnabledForCCI" -Type DWord -Value 0
+if (-not (Test-Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Connectivity\DisableCrossDeviceResume")) { New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Connectivity\DisableCrossDeviceResume" | Out-Null }
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Connectivity\DisableCrossDeviceResume" -Name "value" -Type DWord -Value 1
 
 if (-not (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard")) { New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" | Out-Null }
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Type DWord -Value 0
@@ -511,6 +512,10 @@ Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Speech\" -TaskName "SpeechMo
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "Registration" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "LoginCheck" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\OneSettings\" -TaskName "RefreshCache" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Cache Maintenance" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Scheduled Scan" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Cleanup" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Verification" | Out-Null
 
 write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null
@@ -523,6 +528,25 @@ net stop BITS *>&1 | Out-Null
 net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null
 net stop DoSvc *>&1 | Out-Null
+
+write-host "Killing Smartscreen.exe and WaaSMedicAgent" -ForegroundColor red
+$files = @(
+    "$env:SystemDrive\WINDOWS\uus\AMD64\WaaSMedicAgent.exe",
+    "$env:SystemDrive\WINDOWS\uus\packages\preview\AMD64\MoUsoCoreWorker.exe",
+    "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
+    "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
+)
+foreach ($file in $files) {
+    if (-not (Test-Path $file)) {
+        continue
+    }
+    takeown /f $file /a | Out-Null
+    icacls $file /grant "*S-1-5-32-544:F" | Out-Null
+    $newName = (Split-Path $file -Leaf) + ".disabled"
+    Rename-Item -Path $file -NewName $newName -Force
+}
+write-host "Running IdleTasks" -ForegroundColor red
+Rundll32.exe advapi32.dll,ProcessIdleTasks
 
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\

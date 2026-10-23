@@ -338,6 +338,9 @@ bcdedit /set x2apicpolicy Enable *>$null
 bcdedit /set vsmlaunchtype off *>$null
 bcdedit /set hypervisorlaunchtype off *>$null
 
+write-host "Disabling LastAccess" -ForegroundColor red
+fsutil behavior set disablelastaccess 1
+
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
@@ -362,6 +365,11 @@ Get-NetAdapter -Physical |
         }
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
     }
+Get-NetAdapter -Physical | ForEach-Object {
+    $p = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)"
+    if (-not (Test-Path $p)) { New-Item -Path $p -Force | Out-Null }
+    Set-ItemProperty -Path $p -Name "TcpAckFrequency" -Value 1
+}
 Write-Host "Disabling NetBIOS" -ForegroundColor red
 Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
 Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null

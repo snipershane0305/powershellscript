@@ -339,7 +339,7 @@ bcdedit /set vsmlaunchtype off *>$null
 bcdedit /set hypervisorlaunchtype off *>$null
 
 write-host "Disabling LastAccess" -ForegroundColor red
-fsutil behavior set disablelastaccess 1
+fsutil behavior set disablelastaccess 1 *>$null
 
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
@@ -537,6 +537,7 @@ write-host "Killing Smartscreen.exe and usoclient.exe" -ForegroundColor red
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
+    "$env:SystemDrive\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe"
 )
 foreach ($file in $files) {
     if (-not (Test-Path $file)) {
@@ -544,7 +545,7 @@ foreach ($file in $files) {
     }
     takeown /f $file /a | Out-Null
     icacls $file /grant "*S-1-5-32-544:F" | Out-Null
-    $newName = (Split-Path $file -Leaf) + ".disabled"
+    $newName = (Split-Path $file -Leaf) + ".old"
     Rename-Item -Path $file -NewName $newName -Force
 }
 write-host "Running IdleTasks" -ForegroundColor red

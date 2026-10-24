@@ -520,6 +520,9 @@ Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Scheduled Scan" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Cleanup" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Verification" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "ResPriStaticDbSync" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "WsSwapAssessmentTask" | Out-Null
+Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Maintenance\" -TaskName "WinSAT" | Out-Null
 
 write-host "Setting Services" -ForegroundColor red
 Stop-Service $forcestopservices -force 2>$null

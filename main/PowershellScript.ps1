@@ -292,7 +292,7 @@ wbengine,Disabled,Manual,True,Block Level Backup Engine Service
 fhsvc,Disabled,Manual,True,File History Service
 refsdedupsvc,Disabled,Manual,True,ReFS Dedup Service
 VSS,Disabled,Manual,True,Volume Shadow Copy
-swprv,Disbaled,Manual,True,Microsoft Software Shadow Copy Provider
+swprv,Disabled,Manual,True,Microsoft Software Shadow Copy Provider
 TieringEngineService,Disabled,Manual,True,Storage Tiers Management
 
 Spooler,Disabled,Automatic,True,Print Spooler

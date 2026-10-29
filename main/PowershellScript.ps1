@@ -40,7 +40,6 @@ Dhcp,Automatic,Automatic,False,DHCP Client
 DispBrokerDesktopSvc,Automatic,Automatic,False,Display Policy Service
 Dnscache,Automatic,Automatic,False,DNS Client
 DsmSvc,Manual,Manual,False,Device Setup Manager
-DusmSvc,Manual,Automatic,False,Data Usage
 EFS,Manual,Manual,False,Encrypting File System (EFS)
 EapHost,Manual,Manual,False,Extensible Authentication Protocol
 EntAppSvc,Manual,Manual,False,Microsoft Store Install Service (Enterprise App Management)
@@ -238,6 +237,7 @@ BthAvctpSvc,Disabled,Automatic,True,AVCTP service
 TrkWks,Disabled,Automatic,True,Distributed Link Tracking Client
 PolicyAgent,Disabled,Manual,True,IPsec Policy Agent
 dot3svc,Disabled,Manual,True,Wired AutoConfig
+whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
@@ -252,7 +252,7 @@ CDPSvc,Disabled,Automatic,True,Connected Devices Platform Service
 lfsvc,Disabled,Manual,True,Geolocation Service
 MapsBroker,Disabled,Automatic,True,Downloaded Maps Manager
 WerSvc,Disabled,Manual,True,Windows Error Reporting Service
-DsSvc,Disable,Manual,True,Data Sharing Service
+DsSvc,Disabled,Manual,True,Data Sharing Service
 
 SSDPSRV,Disabled,Manual,True,SSDP Discovery
 fdPHost,Disabled,Manual,True,Function Discovery Provider Host
@@ -303,6 +303,7 @@ ClipSVC,Manual,Manual,True,Client License Service (ClipSVC)
 TextInputManagementService,Manual,Automatic,True,Text Input Management Service
 camsvc,Manual,Manual,True,Capability Access Manager Service
 cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
+DusmSvc,Manual,Automatic,True,Data Usage
 "@ | ConvertFrom-Csv
 
 $allServices = @($manualServices) + @($disabledServices) + @($forcestopOnlyServices)

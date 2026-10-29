@@ -10,7 +10,6 @@ AppReadiness,Manual,Manual,False,App Readiness
 AppXSvc,Manual,Manual,False,AppX Deployment Service
 Appinfo,Manual,Manual,False,Application Information
 AudioEndpointBuilder,Automatic,Automatic,False,Windows Audio Endpoint Builder
-AudioSrv,Automatic,Automatic,False,Windows Audio (legacy name)
 Audiosrv,Automatic,Automatic,False,Windows Audio
 AxInstSV,Manual,Manual,False,ActiveX Installer Service
 BDESVC,Manual,Manual,False,BitLocker Drive Encryption Service
@@ -20,13 +19,10 @@ BcastDVRUserService_*,Manual,Manual,False,GameDVR and Broadcast User Service
 BluetoothUserService_*,Manual,Manual,False,Bluetooth User Support Service
 BrokerInfrastructure,Automatic,Automatic,False,Background Tasks Infrastructure Service
 Browser,Manual,Manual,False,Computer Browser
-BthAvctpSvc,Automatic,Automatic,False,AVCTP service
-BthHFSrv,Automatic,Automatic,False,Bluetooth Handsfree Service
-CDPUserSvc_*,Automatic,Automatic,False,Connected Devices Platform User Service
+BthHFSrv,Manual,Automatic,False,Bluetooth Handsfree Service
 COMSysApp,Manual,Manual,False,COM+ System Application
 CaptureService_*,Manual,Manual,False,CaptureService
 CertPropSvc,Manual,Manual,False,Certificate Propagation
-ClipSVC,Manual,Manual,False,Client License Service (ClipSVC)
 ConsentUxUserSvc_*,Manual,Manual,False,ConsentUX User Service
 CoreMessagingRegistrar,Automatic,Automatic,False,CoreMessaging
 CredentialEnrollmentManagerUserSvc_*,Manual,Manual,False,CredentialEnrollmentManagerUserSvc
@@ -42,12 +38,9 @@ DevicePickerUserSvc_*,Manual,Manual,False,DevicePickerUserSvc
 DevicesFlowUserSvc_*,Manual,Manual,False,DevicesFlowUserSvc
 Dhcp,Automatic,Automatic,False,DHCP Client
 DispBrokerDesktopSvc,Automatic,Automatic,False,Display Policy Service
-DisplayEnhancementService,Manual,Manual,False,Display Enhancement Service
 Dnscache,Automatic,Automatic,False,DNS Client
-DoSvc,AutomaticDelayedStart,Automatic,False,Delivery Optimization
-DsSvc,Manual,Manual,False,Data Sharing Service
 DsmSvc,Manual,Manual,False,Device Setup Manager
-DusmSvc,Automatic,Automatic,False,Data Usage
+DusmSvc,Manual,Automatic,False,Data Usage
 EFS,Manual,Manual,False,Encrypting File System (EFS)
 EapHost,Manual,Manual,False,Extensible Authentication Protocol
 EntAppSvc,Manual,Manual,False,Microsoft Store Install Service (Enterprise App Management)
@@ -63,15 +56,11 @@ HomeGroupProvider,Manual,Manual,False,HomeGroup Provider
 HvHost,Manual,Manual,False,Hyper-V Host Compute Service
 IEEtwCollectorService,Manual,Manual,False,IE ETW Collector Service
 IKEEXT,Manual,Manual,False,IKE and AuthIP IPsec Keying Modules
-InstallService,Manual,Manual,False,Microsoft Store Install Service
 InventorySvc,Manual,Manual,False,Inventory and Compatibility Appraisal service
 IpxlatCfgSvc,Manual,Manual,False,IP Translation Configuration Service
 KeyIso,Automatic,Automatic,False,CNG Key Isolation
 KtmRm,Manual,Manual,False,KtmRm for Distributed Transaction Coordinator
 LSM,Automatic,Automatic,False,Local Session Manager
-LanmanServer,Automatic,Automatic,False,Server
-LanmanWorkstation,Automatic,Automatic,False,Workstation
-LicenseManager,Manual,Manual,False,Windows License Manager Service
 LxpSvc,Manual,Manual,False,Language Experience Service
 MSDTC,Manual,Manual,False,Distributed Transaction Coordinator
 MSiSCSI,Manual,Manual,False,Microsoft iSCSI Initiator Service
@@ -86,23 +75,19 @@ NcaSvc,Manual,Manual,False,Network Connectivity Assistant
 NcbService,Manual,Manual,False,Network Connection Broker
 NcdAutoSetup,Manual,Manual,False,Network Connected Devices Auto-Setup
 NetSetupSvc,Manual,Manual,False,Network Setup Service
-Netlogon,Automatic,Automatic,False,Netlogon
 Netman,Manual,Manual,False,Network Connections
 NgcCtnrSvc,Manual,Manual,False,Microsoft Passport Container
 NgcSvc,Manual,Manual,False,Microsoft Passport (Windows Hello)
 NlaSvc,Manual,Manual,False,Network Location Awareness
-OneSyncSvc_*,Automatic,Automatic,False,Sync Host Service
 P9RdrService_*,Manual,Manual,False,P9 Redirector Service (Plan 9 filesystem, for WSL)
 PNRPAutoReg,Manual,Manual,False,PNRP Machine Name Publication Service
 PNRPsvc,Manual,Manual,False,Peer Name Resolution Protocol
-PcaSvc,Manual,Automatic,False,Program Compatibility Assistant Service
 PeerDistSvc,Manual,Manual,False,BranchCache
 PenService_*,Manual,Manual,False,Pen Service
 PerfHost,Manual,Manual,False,Performance Counter DLL Host
 PhoneSvc,Manual,Manual,False,Phone Service
 PimIndexMaintenanceSvc_*,Manual,Manual,False,Contact Data (PIM Index Maintenance)
 PlugPlay,Manual,Manual,False,Plug and Play
-PolicyAgent,Manual,Manual,False,IPsec Policy Agent
 Power,Automatic,Automatic,False,Power
 PrintWorkflowUserSvc_*,Manual,Manual,False,PrintWorkflowUserSvc
 ProfSvc,Automatic,Automatic,False,User Profile Service
@@ -123,34 +108,26 @@ ScDeviceEnum,Manual,Manual,False,Smart Card Device Enumeration Service
 Schedule,Automatic,Automatic,False,Task Scheduler
 SecurityHealthService,Manual,Manual,False,Windows Security Service
 Sense,Manual,Manual,False,Windows Defender Advanced Threat Protection Service
-SensorDataService,Manual,Manual,False,Sensor Data Service
-SensorService,Manual,Manual,False,Sensor Service
-SensrSvc,Manual,Manual,False,Sensor Monitoring Service
 SgrmBroker,Automatic,Automatic,False,System Guard Runtime Monitor Broker
 SharedAccess,Manual,Manual,False,Internet Connection Sharing (ICS)
 SharedRealitySvc,Manual,Manual,False,Spatial Data Service (uncertain)
-ShellHWDetection,Automatic,Automatic,False,Shell Hardware Detection
+ShellHWDetection,Manual,Automatic,False,Shell Hardware Detection
 SmsRouter,Manual,Manual,False,Microsoft Windows SMS Router Service
 StateRepository,Manual,Automatic,False,State Repository Service
 StiSvc,Manual,Manual,False,Windows Image Acquisition (WIA)
-StorSvc,Manual,Automatic,False,Storage Service
 SystemEventsBroker,Automatic,Automatic,False,System Events Broker
 TabletInputService,Manual,Manual,False,Touch Keyboard and Handwriting Panel Service
 TapiSrv,Manual,Manual,False,Telephony
-TextInputManagementService,Manual,Automatic,False,Text Input Management Service
 Themes,Automatic,Automatic,False,Themes
 TimeBroker,Manual,Manual,False,Time Broker
 TimeBrokerSvc,Manual,Manual,False,Time Broker (per-session variant)
 TokenBroker,Manual,Manual,False,Web Account Manager
-TrkWks,Automatic,Automatic,False,Distributed Link Tracking Client
 TrustedInstaller,Manual,Manual,False,Windows Modules Installer
 UI0Detect,Manual,Manual,False,Interactive Services Detection
 UdkUserSvc_*,Manual,Manual,False,UdkUserSvc (uncertain - User Data Keys)
 UnistoreSvc_*,Manual,Manual,False,User Data Storage
 UserDataSvc_*,Manual,Manual,False,User Data Access
 UserManager,Automatic,Automatic,False,User Manager
-VGAuthService,Automatic,Automatic,False,VMware Guest Authentication Service
-VMTools,Automatic,Automatic,False,VMware Tools
 VacSvc,Manual,Manual,False,Volumetric Audio Compositor Service (uncertain)
 VaultSvc,Automatic,Automatic,False,Credential Manager
 W32Time,Manual,Manual,False,Windows Time
@@ -170,7 +147,6 @@ WdNisSvc,Manual,Manual,False,Microsoft Defender Antivirus Network Inspection Ser
 WebClient,Manual,Manual,False,WebClient (WebDAV)
 Wecsvc,Manual,Manual,False,Windows Event Collector
 WiaRpc,Manual,Manual,False,Still Image Acquisition Events
-WinDefend,Automatic,Automatic,False,Microsoft Defender Antivirus Service
 WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 Winmgmt,Automatic,Automatic,False,Windows Management Instrumentation
 WlanSvc,Automatic,Automatic,False,WLAN AutoConfig
@@ -184,13 +160,10 @@ XboxGipSvc,Manual,Manual,False,Xbox Accessory Management Service
 XboxNetApiSvc,Manual,Manual,False,Xbox Live Networking Service
 autotimesvc,Manual,Manual,False,Cellular Time
 bthserv,Manual,Manual,False,Bluetooth Support Service
-camsvc,Manual,Manual,False,Capability Access Manager Service
-cbdhsvc_*,Manual,Automatic,False,Clipboard User Service
 cloudidsvc,Manual,Manual,False,Microsoft Cloud Identity Service
 dcsvc,Manual,Manual,False,Declared Configuration(DC) Service
 defragsvc,Manual,Manual,False,Optimize Drives
 diagnosticshub.standardcollector.service,Manual,Manual,False,Microsoft (R) Diagnostics Hub Standard Collector Service
-dot3svc,Automatic,Manual,False,Wired AutoConfig
 embeddedmode,Manual,Manual,False,Embedded Mode
 gpsvc,Automatic,Automatic,False,Group Policy Client
 hidserv,Manual,Manual,False,Human Interface Device Service
@@ -208,12 +181,10 @@ pla,Manual,Manual,False,Performance Logs & Alerts
 seclogon,Manual,Manual,False,Secondary Logon
 smphost,Manual,Manual,False,Microsoft Storage Spaces SMP
 spectrum,Manual,Manual,False,Windows Perception Service (uncertain)
-sppsvc,AutomaticDelayedStart,Automatic,False,Software Protection
 svsvc,Manual,Manual,False,Spot Verifier
 tiledatamodelsvc,Automatic,Automatic,False,Tile Data model server
 upnphost,Manual,Manual,False,UPnP Device Host
 vds,Manual,Manual,False,Virtual Disk
-vm3dservice,Manual,Automatic,False,VMware SVGA Helper Service
 vmicguestinterface,Manual,Manual,False,Hyper-V Guest Service Interface
 vmicheartbeat,Manual,Manual,False,Hyper-V Heartbeat Service
 vmickvpexchange,Manual,Manual,False,Hyper-V Data Exchange Service
@@ -229,7 +200,7 @@ wlidsvc,Manual,Manual,False,Microsoft Account Sign-in Assistant
 wlpasvc,Manual,Manual,False,Local Profile Assistant Service
 wmiApSrv,Manual,Manual,False,WMI Performance Adapter
 workfolderssvc,Manual,Manual,False,Work Folders
-wscsvc,AutomaticDelayedStart,Automatic,False,Security Center
+wscsvc,Manual,Automatic,False,Security Center
 wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framework
 "@ | ConvertFrom-Csv
 
@@ -253,10 +224,25 @@ webthreatdefusersvc_*,Disabled,Automatic,True,Windows Defender Core Service (Sma
 midisrv,Disabled,Automatic,True,Windows MIDI Services
 WSAIFabricSvc,Disabled,Automatic,True,WSAIFabricSvc (AI Fabric Service)
 RmSvc,Disabled,Disabled,True,Radio Management Service
+StorSvc,Disabled,Automatic,True,Storage Service
+PcaSvc,Disabled,Automatic,True,Program Compatibility Assistant Service
+LicenseManager,Disabled,Manual,True,Windows License Manager Service
+Netlogon,Disabled,Automatic,True,Netlogon
+LanmanWorkstation,Disabled,Automatic,True,Workstation
+DisplayEnhancementService,Disabled,Manual,True,Display Enhancement Service
+InstallService,Disabled,Manual,True,Microsoft Store Install Service
+LanmanServer,Disabled,Automatic,True,Server
+CDPUserSvc_*,Disabled,Automatic,True,Connected Devices Platform User Service
+OneSyncSvc_*,Disabled,Automatic,True,Sync Host Service
+BthAvctpSvc,Disabled,Automatic,True,AVCTP service
+TrkWks,Disabled,Automatic,True,Distributed Link Tracking Client
+PolicyAgent,Disabled,Manual,True,IPsec Policy Agent
+dot3svc,Disabled,Manual,True,Wired AutoConfig
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
 UsoSvc,Disabled,Automatic,True,Update Orchestrator Service
+DoSvc,Disabled,Automatic,True,Delivery Optimization
 
 DiagTrack,Disabled,Automatic,True,Connected User Experiences and Telemetry
 dmwappushservice,Disabled,Manual,True,Device Management Wireless Application Protocol (WAP) Push message Routing Service
@@ -266,6 +252,7 @@ CDPSvc,Disabled,Automatic,True,Connected Devices Platform Service
 lfsvc,Disabled,Manual,True,Geolocation Service
 MapsBroker,Disabled,Automatic,True,Downloaded Maps Manager
 WerSvc,Disabled,Manual,True,Windows Error Reporting Service
+DsSvc,Disable,Manual,True,Data Sharing Service
 
 SSDPSRV,Disabled,Manual,True,SSDP Discovery
 fdPHost,Disabled,Manual,True,Function Discovery Provider Host
@@ -299,6 +286,10 @@ Spooler,Disabled,Automatic,True,Print Spooler
 PrintNotify,Disabled,Manual,True,Printer Extensions and Notifications
 PrintScanBrokerService,Disabled,Manual,True,Print Scan Broker Service
 
+SensorDataService,Disabled,Manual,True,Sensor Data Service
+SensorService,Disabled,Manual,True,Sensor Service
+SensrSvc,Disabled,Manual,True,Sensor Monitoring Service
+
 edgeupdate,Disabled,Automatic,True,Microsoft Edge Update Service
 edgeupdatem,Disabled,Manual,True,Microsoft Edge Update Service (medium tier)
 MicrosoftEdgeElevationService,Disabled,Manual,True,Microsoft Edge Elevation Service
@@ -307,14 +298,25 @@ GoogleChromeElevationService,Disabled,Manual,True,Google Chrome Elevation Servic
 
 $forcestopOnlyServices = @"
 Name,StartupType,OriginalType,ForceStop,DisplayName
+sppsvc,Manual,Automatic,True,Software Protection
+ClipSVC,Manual,Manual,True,Client License Service (ClipSVC)
+TextInputManagementService,Manual,Automatic,True,Text Input Management Service
+camsvc,Manual,Manual,True,Capability Access Manager Service
+cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
 "@ | ConvertFrom-Csv
+
 $allServices = @($manualServices) + @($disabledServices) + @($forcestopOnlyServices)
 $existingSvc = Get-CimInstance Win32_Service | Group-Object Name -AsHashTable -AsString
 $forcestopList = [System.Collections.Generic.List[string]]::new()
 foreach ($entry in $allServices) {
-    if ($entry.Name -like '*_\*') {
+    if ($entry.Name.EndsWith('*')) {
         $prefix = $entry.Name.TrimEnd('*')
         $svcMatches = $existingSvc.Keys | Where-Object { $_ -like "$prefix*" }
+        $startValue = switch ($entry.StartupType) { 'Disabled' {4} 'Manual' {3} default {$null} }
+        $template = "HKLM:\SYSTEM\CurrentControlSet\Services\$($prefix.TrimEnd('_'))"
+        if ($startValue -and (Test-Path $template)) {
+            Set-ItemProperty -Path $template -Name Start -Value $startValue -ErrorAction SilentlyContinue
+        }
     } else {
         $svcMatches = @($entry.Name)
     }

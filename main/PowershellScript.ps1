@@ -7,7 +7,6 @@ ALG,Manual,Manual,False,Application Layer Gateway Service
 AppIDSvc,Manual,Manual,False,Application Identity
 AppMgmt,Manual,Manual,False,Application Management
 AppReadiness,Manual,Manual,False,App Readiness
-AppXSvc,Manual,Manual,False,AppX Deployment Service
 Appinfo,Manual,Manual,False,Application Information
 AudioEndpointBuilder,Automatic,Automatic,False,Windows Audio Endpoint Builder
 Audiosrv,Automatic,Automatic,False,Windows Audio
@@ -37,7 +36,7 @@ DeviceInstall,Manual,Manual,False,Device Install Service
 DevicePickerUserSvc_*,Manual,Manual,False,DevicePickerUserSvc
 DevicesFlowUserSvc_*,Manual,Manual,False,DevicesFlowUserSvc
 Dhcp,Automatic,Automatic,False,DHCP Client
-DispBrokerDesktopSvc,Automatic,Automatic,False,Display Policy Service
+DispBrokerDesktopSvc,Manual,Automatic,False,Display Policy Service
 Dnscache,Automatic,Automatic,False,DNS Client
 DsmSvc,Manual,Manual,False,Device Setup Manager
 EFS,Manual,Manual,False,Encrypting File System (EFS)
@@ -102,7 +101,7 @@ SEMgrSvc,Manual,Manual,False,Payments and NFC/SE Manager
 SENS,Automatic,Automatic,False,System Event Notification Service
 SNMPTRAP,Manual,Manual,False,SNMP Trap
 SNMPTrap,Manual,Manual,False,SNMP Trap (alt casing)
-SamSs,Automatic,Automatic,False,Security Accounts Manager
+SamSs,Manual,Automatic,False,Security Accounts Manager
 ScDeviceEnum,Manual,Manual,False,Smart Card Device Enumeration Service
 Schedule,Automatic,Automatic,False,Task Scheduler
 SecurityHealthService,Manual,Manual,False,Windows Security Service
@@ -113,7 +112,6 @@ SharedRealitySvc,Manual,Manual,False,Spatial Data Service (uncertain)
 ShellHWDetection,Manual,Automatic,False,Shell Hardware Detection
 SmsRouter,Manual,Manual,False,Microsoft Windows SMS Router Service
 StateRepository,Manual,Automatic,False,State Repository Service
-StiSvc,Manual,Manual,False,Windows Image Acquisition (WIA)
 SystemEventsBroker,Automatic,Automatic,False,System Events Broker
 TabletInputService,Manual,Manual,False,Touch Keyboard and Handwriting Panel Service
 TapiSrv,Manual,Manual,False,Telephony
@@ -140,7 +138,7 @@ WaaSMedicSvc,Manual,Manual,False,Windows Update Medic Service
 WalletService,Manual,Manual,False,WalletService
 WarpJITSvc,Manual,Manual,False,WarpJITSvc (D3D software rasterizer JIT, uncertain)
 WbioSrvc,Manual,Manual,False,Windows Biometric Service
-Wcmsvc,Automatic,Automatic,False,Windows Connection Manager
+Wcmsvc,Manual,Automatic,False,Windows Connection Manager
 WcsPlugInService,Manual,Manual,False,Windows Color System
 WdNisSvc,Manual,Manual,False,Microsoft Defender Antivirus Network Inspection Service
 WebClient,Manual,Manual,False,WebClient (WebDAV)
@@ -167,7 +165,6 @@ embeddedmode,Manual,Manual,False,Embedded Mode
 gpsvc,Automatic,Automatic,False,Group Policy Client
 hidserv,Manual,Manual,False,Human Interface Device Service
 icssvc,Manual,Manual,False,Windows Mobile Hotspot Service
-iphlpsvc,Automatic,Automatic,False,IP Helper
 lltdsvc,Manual,Manual,False,Link-Layer Topology Discovery Mapper
 mpssvc,Automatic,Automatic,False,Windows Defender Firewall
 msiserver,Manual,Manual,False,Windows Installer
@@ -238,6 +235,7 @@ TrkWks,Disabled,Automatic,True,Distributed Link Tracking Client
 PolicyAgent,Disabled,Manual,True,IPsec Policy Agent
 dot3svc,Disabled,Manual,True,Wired AutoConfig
 whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
+StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
@@ -304,6 +302,8 @@ TextInputManagementService,Manual,Automatic,True,Text Input Management Service
 camsvc,Manual,Manual,True,Capability Access Manager Service
 cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
 DusmSvc,Manual,Automatic,True,Data Usage
+iphlpsvc,Manual,Automatic,True,IP Helper
+AppXSvc,Manual,Manual,True,AppX Deployment Service
 "@ | ConvertFrom-Csv
 
 $allServices = @($manualServices) + @($disabledServices) + @($forcestopOnlyServices)

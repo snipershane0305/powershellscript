@@ -568,18 +568,16 @@ foreach ($file in $files) {
     $newName = (Split-Path $file -Leaf) + ".old"
     Rename-Item -Path $file -NewName $newName -Force
 }
-Start-Sleep -Seconds 210
-write-host "Stopping Processes" -ForegroundColor red
-Get-Process -Name *TextInputHost* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *TiWorker* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *dllhost* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *taskhostw* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *WmiPrvSE* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *RuntimeBroker* -ErrorAction SilentlyContinue | Stop-Process -Force
 
-write-host "Setting Services" -ForegroundColor red
-Set-Services
-Stop-Service -Name WaaSMedicSvc,DoSvc,TrustedInstaller,WPDBusEnum,AppXSvc,WinHttpAutoProxySvc -ErrorAction SilentlyContinue
+write-host "Waiting 3 minutes to stop lingering processes/services" -ForegroundColor red
+$total = 180
+for ($i = $total; $i -ge 0; $i--) {
+    Write-Progress -Activity "Paused" `
+        -Status ("{0:mm\:ss} remaining" -f [TimeSpan]::FromSeconds($i)) `
+        -PercentComplete ((($total - $i) / $total) * 100)
+    Start-Sleep -Seconds 1
+}
+Write-Progress -Activity "Waiting" -Completed
 
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
@@ -588,5 +586,17 @@ if (Test-Path ".\memreduct.exe") {
     Start-Sleep -Seconds 5
     taskkill /IM memreduct.exe /F *>$null
 }
+
+write-host "Stopping Processes" -ForegroundColor red
+Get-Process -Name *TextInputHost* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *TiWorker* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *dllhost* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *taskhostw* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *WmiPrvSE* -ErrorAction SilentlyContinue | Stop-Process -Force
+
+write-host "Setting Services" -ForegroundColor red
+Set-Services
+Stop-Service -Name WaaSMedicSvc,DoSvc,TrustedInstaller,WPDBusEnum,AppXSvc,WinHttpAutoProxySvc -ErrorAction SilentlyContinue
+
 write-host "Done" -ForegroundColor red
 pause

@@ -1,5 +1,8 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
+write-host "Running IdleTasks" -ForegroundColor red
+Rundll32.exe advapi32.dll,ProcessIdleTasks
+
 write-host "Setting Services" -ForegroundColor red
 $manualServices = @"
 Name,StartupType,OriginalType,ForceStop,DisplayName
@@ -306,35 +309,30 @@ iphlpsvc,Manual,Automatic,True,IP Helper
 AppXSvc,Manual,Manual,True,AppX Deployment Service
 "@ | ConvertFrom-Csv
 
-$allServices = @($manualServices) + @($disabledServices) + @($forcestopOnlyServices)
-$existingSvc = Get-CimInstance Win32_Service | Group-Object Name -AsHashTable -AsString
-$forcestopList = [System.Collections.Generic.List[string]]::new()
-foreach ($entry in $allServices) {
-    if ($entry.Name.EndsWith('*')) {
-        $prefix = $entry.Name.TrimEnd('*')
-        $svcMatches = $existingSvc.Keys | Where-Object { $_ -like "$prefix*" }
-        $startValue = switch ($entry.StartupType) { 'Disabled' {4} 'Manual' {3} default {$null} }
-        $template = "HKLM:\SYSTEM\CurrentControlSet\Services\$($prefix.TrimEnd('_'))"
-        if ($startValue -and (Test-Path $template)) {
-            Set-ItemProperty -Path $template -Name Start -Value $startValue -ErrorAction SilentlyContinue
+function Set-Services {
+    $allServices = @($manualServices) + @($disabledServices) + @($forcestopOnlyServices)
+    $existingSvc = Get-CimInstance Win32_Service | Group-Object Name -AsHashTable -AsString
+    $forcestopList = [System.Collections.Generic.List[string]]::new()
+    foreach ($entry in $allServices) {
+        if ($entry.Name.EndsWith('*')) {
+            $prefix = $entry.Name.TrimEnd('*')
+            $svcMatches = $existingSvc.Keys | Where-Object { $_ -like "$prefix*" }
+        } else {
+            $svcMatches = @($entry.Name)
         }
-    } else {
-        $svcMatches = @($entry.Name)
+        foreach ($svcName in $svcMatches) {
+            $svc = $existingSvc[$svcName]
+            if (-not $svc) { continue }
+            if ($entry.ForceStop -eq 'True') { $forcestopList.Add($svcName) }
+            $currentType = switch ($svc.StartMode) { 'Auto' {'Automatic'} default {$svc.StartMode} }
+            if ($currentType -eq $entry.StartupType) { continue }
+            Set-Service -Name $svcName -StartupType $entry.StartupType -ErrorAction SilentlyContinue
+        }
     }
-    foreach ($svcName in $svcMatches) {
-        $svc = $existingSvc[$svcName]
-        if (-not $svc) { continue }
-
-        if ($entry.ForceStop -eq 'True') { $forcestopList.Add($svcName) }
-
-        $currentType = switch ($svc.StartMode) { 'Auto' {'Automatic'} default {$svc.StartMode} }
-        if ($currentType -eq $entry.StartupType) { continue }
-        Set-Service -Name $svcName -StartupType $entry.StartupType -ErrorAction SilentlyContinue
-    }
+    if ($forcestopList.Count -gt 0) { Stop-Service -Name $forcestopList -Force -ErrorAction SilentlyContinue }
 }
-if ($forcestopList.Count -gt 0) {
-    Stop-Service -Name $forcestopList -Force -ErrorAction SilentlyContinue
-}
+Set-Services
+
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
@@ -570,8 +568,18 @@ foreach ($file in $files) {
     $newName = (Split-Path $file -Leaf) + ".old"
     Rename-Item -Path $file -NewName $newName -Force
 }
-write-host "Running IdleTasks" -ForegroundColor red
-Rundll32.exe advapi32.dll,ProcessIdleTasks
+Start-Sleep -Seconds 210
+write-host "Stopping Processes" -ForegroundColor red
+Get-Process -Name *TextInputHost* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *TiWorker* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *dllhost* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *taskhostw* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *WmiPrvSE* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *RuntimeBroker* -ErrorAction SilentlyContinue | Stop-Process -Force
+
+write-host "Setting Services" -ForegroundColor red
+Set-Services
+Stop-Service -Name WaaSMedicSvc,DoSvc,TrustedInstaller,WPDBusEnum,AppXSvc,WinHttpAutoProxySvc -ErrorAction SilentlyContinue
 
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\

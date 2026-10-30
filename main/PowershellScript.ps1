@@ -560,7 +560,6 @@ write-host "Killing Smartscreen.exe and usoclient.exe" -ForegroundColor red
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
-    "$env:SystemDrive\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe"
 )
 foreach ($file in $files) {
     if (-not (Test-Path $file)) {

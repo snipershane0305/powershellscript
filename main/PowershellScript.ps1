@@ -197,6 +197,7 @@ wmiApSrv,Manual,Manual,False,WMI Performance Adapter
 workfolderssvc,Manual,Manual,False,Work Folders
 wscsvc,Manual,Automatic,False,Security Center
 wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framework
+NetSetupSvc,Manual,Manual,False,Network Setup Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"
@@ -237,7 +238,6 @@ whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
 StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
 TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
 WinHttpAutoProxySvc,Disabled,Manual,True,WinHTTP Web Proxy Auto-Discovery Service
-NetSetupSvc,Disabled,Manual,True,Network Setup Service
 ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
 DeviceAssociationService,Disabled,Manual,True,Device Association Service
 

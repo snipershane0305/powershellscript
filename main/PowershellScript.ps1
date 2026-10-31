@@ -332,6 +332,7 @@ function Set-Services {
     if ($forcestopList.Count -gt 0) { Stop-Service -Name $forcestopList -Force -ErrorAction SilentlyContinue }
 }
 Set-Services
+Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" -Name Start -Value 4 | Out-Null
 
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
@@ -513,46 +514,42 @@ if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Se
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type DWord -Value 1
 
 write-host "Disabling ScheduledTasks" -ForegroundColor red
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\WindowsUpdate" -TaskName "Scheduled Start" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Windows Error Reporting" -TaskName "QueueReporting" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\User Profile Service" -TaskName "HiveUploadTask" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Maps" -TaskName "MapsUpdateTask" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Application Experience" -TaskName "MareBackup" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Application Experience" -TaskName "Microsoft Compatibility Appraiser Exp" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Customer Experience Improvement Program" -TaskName "Consolidator" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Customer Experience Improvement Program" -TaskName "UsbCeip" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClient" | Out-Null
-Disable-ScheduledTask -taskpath "\Microsoft\Windows\Feedback\Siuf" -TaskName "DmClientOnScenarioDownload" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdates" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\InstallService\" -TaskName "ScanForUpdatesAsUser" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Device Information" -TaskName "Device User" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataFlushing" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "UsageDataReceiver" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\FeatureConfig" -TaskName "ReconcileFeatures" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\WwanSvc\" -TaskName "OobeDiscovery" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sustainability\" -TaskName "PowerGridForecastTask" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Hotpatch\" -TaskName "Monitoring" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Speech\" -TaskName "SpeechModelDownloadTask" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "Registration" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\PushToInstall\" -TaskName "LoginCheck" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Flighting\OneSettings\" -TaskName "RefreshCache" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Cache Maintenance" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Scheduled Scan" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Cleanup" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Windows Defender\" -TaskName "Windows Defender Verification" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "ResPriStaticDbSync" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "WsSwapAssessmentTask" | Out-Null
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Maintenance\" -TaskName "WinSAT" | Out-Null
-
 $Tasks = @"
 TaskPath,TaskName
-\Microsoft\Windows\Servicing\,StartComponentCleanup
+\Microsoft\Windows\WindowsUpdate\,Scheduled Start
+\Microsoft\Windows\Windows Error Reporting\,QueueReporting
+\Microsoft\Windows\User Profile Service\,HiveUploadTask
+\Microsoft\Windows\Maps\,MapsUpdateTask
+\Microsoft\Windows\Application Experience\,MareBackup
+\Microsoft\Windows\Application Experience\,Microsoft Compatibility Appraiser Exp
+\Microsoft\Windows\Customer Experience Improvement Program\,Consolidator
+\Microsoft\Windows\Customer Experience Improvement Program\,UsbCeip
+\Microsoft\Windows\Feedback\Siuf\,DmClient
+\Microsoft\Windows\Feedback\Siuf\,DmClientOnScenarioDownload
+\Microsoft\Windows\InstallService\,ScanForUpdates
+\Microsoft\Windows\InstallService\,ScanForUpdatesAsUser
+\Microsoft\Windows\Device Information\,Device
+\Microsoft\Windows\Device Information\,Device User
+\Microsoft\Windows\Flighting\FeatureConfig\,UsageDataFlushing
+\Microsoft\Windows\Flighting\FeatureConfig\,UsageDataReceiver
+\Microsoft\Windows\Flighting\FeatureConfig\,ReconcileFeatures
+\Microsoft\Windows\WwanSvc\,OobeDiscovery
+\Microsoft\Windows\Sustainability\,PowerGridForecastTask
+\Microsoft\Windows\Hotpatch\,Monitoring
+\Microsoft\Windows\Speech\,SpeechModelDownloadTask
+\Microsoft\Windows\PushToInstall\,Registration
+\Microsoft\Windows\PushToInstall\,LoginCheck
+\Microsoft\Windows\Flighting\OneSettings\,RefreshCache
+\Microsoft\Windows\Windows Defender\,Windows Defender Cache Maintenance
+\Microsoft\Windows\Windows Defender\,Windows Defender Scheduled Scan
+\Microsoft\Windows\Windows Defender\,Windows Defender Verification
+\Microsoft\Windows\Sysmain\,ResPriStaticDbSync
+\Microsoft\Windows\Sysmain\,WsSwapAssessmentTask
+\Microsoft\Windows\Maintenance\,WinSAT
+
 \Microsoft\Windows\Setup\,PITRTask
 \Microsoft\Windows\Setup\,SetupRecoveryDataTask
-\Microsoft\Windows\DiskCleanup\,SilentCleanup
 \Microsoft\Windows\DiskFootprint\,Diagnostics
-\Microsoft\Windows\DiskFootprint\,StorageSense
 \Microsoft\Windows\Chkdsk\,ProactiveScan
 \Microsoft\Windows\Registry\,RegIdleBackup
 \Microsoft\Windows\MUI\,LPRemove

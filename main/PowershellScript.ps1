@@ -34,7 +34,6 @@ DcomLaunch,Automatic,Automatic,False,DCOM Server Process Launcher
 DcpSvc,Manual,Manual,False,Data Collection Publishing Service (uncertain)
 DevQueryBroker,Manual,Manual,False,DevQuery Background Discovery Broker
 DeviceAssociationBrokerSvc_*,Manual,Manual,False,DeviceAssociationBroker
-DeviceAssociationService,Manual,Manual,False,Device Association Service
 DeviceInstall,Manual,Manual,False,Device Install Service
 DevicePickerUserSvc_*,Manual,Manual,False,DevicePickerUserSvc
 DevicesFlowUserSvc_*,Manual,Manual,False,DevicesFlowUserSvc
@@ -75,7 +74,6 @@ NaturalAuthentication,Manual,Manual,False,Natural Authentication
 NcaSvc,Manual,Manual,False,Network Connectivity Assistant
 NcbService,Manual,Manual,False,Network Connection Broker
 NcdAutoSetup,Manual,Manual,False,Network Connected Devices Auto-Setup
-NetSetupSvc,Manual,Manual,False,Network Setup Service
 Netman,Manual,Manual,False,Network Connections
 NgcCtnrSvc,Manual,Manual,False,Microsoft Passport Container
 NgcSvc,Manual,Manual,False,Microsoft Passport (Windows Hello)
@@ -104,7 +102,7 @@ SEMgrSvc,Manual,Manual,False,Payments and NFC/SE Manager
 SENS,Automatic,Automatic,False,System Event Notification Service
 SNMPTRAP,Manual,Manual,False,SNMP Trap
 SNMPTrap,Manual,Manual,False,SNMP Trap (alt casing)
-SamSs,Manual,Automatic,False,Security Accounts Manager
+SamSs,Automatic,Automatic,False,Security Accounts Manager
 ScDeviceEnum,Manual,Manual,False,Smart Card Device Enumeration Service
 Schedule,Automatic,Automatic,False,Task Scheduler
 SecurityHealthService,Manual,Manual,False,Windows Security Service
@@ -112,7 +110,6 @@ Sense,Manual,Manual,False,Windows Defender Advanced Threat Protection Service
 SgrmBroker,Automatic,Automatic,False,System Guard Runtime Monitor Broker
 SharedAccess,Manual,Manual,False,Internet Connection Sharing (ICS)
 SharedRealitySvc,Manual,Manual,False,Spatial Data Service (uncertain)
-ShellHWDetection,Manual,Automatic,False,Shell Hardware Detection
 SmsRouter,Manual,Manual,False,Microsoft Windows SMS Router Service
 StateRepository,Manual,Automatic,False,State Repository Service
 SystemEventsBroker,Automatic,Automatic,False,System Events Broker
@@ -147,7 +144,6 @@ WdNisSvc,Manual,Manual,False,Microsoft Defender Antivirus Network Inspection Ser
 WebClient,Manual,Manual,False,WebClient (WebDAV)
 Wecsvc,Manual,Manual,False,Windows Event Collector
 WiaRpc,Manual,Manual,False,Still Image Acquisition Events
-WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 Winmgmt,Automatic,Automatic,False,Windows Management Instrumentation
 WlanSvc,Automatic,Automatic,False,WLAN AutoConfig
 WpcMonSvc,Manual,Manual,False,Parental Controls
@@ -239,6 +235,11 @@ PolicyAgent,Disabled,Manual,True,IPsec Policy Agent
 dot3svc,Disabled,Manual,True,Wired AutoConfig
 whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
 StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
+TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
+WinHttpAutoProxySvc,Disabled,Manual,True,WinHTTP Web Proxy Auto-Discovery Service
+NetSetupSvc,Disabled,Manual,True,Network Setup Service
+ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
+DeviceAssociationService,Disabled,Manual,True,Device Association Service
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
@@ -301,7 +302,6 @@ $forcestopOnlyServices = @"
 Name,StartupType,OriginalType,ForceStop,DisplayName
 sppsvc,Manual,Automatic,True,Software Protection
 ClipSVC,Manual,Manual,True,Client License Service (ClipSVC)
-TextInputManagementService,Manual,Automatic,True,Text Input Management Service
 camsvc,Manual,Manual,True,Capability Access Manager Service
 cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
 DusmSvc,Manual,Automatic,True,Data Usage
@@ -545,6 +545,53 @@ Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "ResPriS
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Sysmain\" -TaskName "WsSwapAssessmentTask" | Out-Null
 Disable-ScheduledTask -TaskPath "\Microsoft\Windows\Maintenance\" -TaskName "WinSAT" | Out-Null
 
+$Tasks = @"
+TaskPath,TaskName
+\Microsoft\Windows\Servicing\,StartComponentCleanup
+\Microsoft\Windows\Setup\,PITRTask
+\Microsoft\Windows\Setup\,SetupRecoveryDataTask
+\Microsoft\Windows\DiskCleanup\,SilentCleanup
+\Microsoft\Windows\DiskFootprint\,Diagnostics
+\Microsoft\Windows\DiskFootprint\,StorageSense
+\Microsoft\Windows\Chkdsk\,ProactiveScan
+\Microsoft\Windows\Registry\,RegIdleBackup
+\Microsoft\Windows\MUI\,LPRemove
+\Microsoft\Windows\Containers\,CmCleanup
+\Microsoft\Windows\LanguageComponentsInstaller\,ReconcileLanguageResources
+\Microsoft\Windows\MemoryDiagnostic\,AutomaticOfflineMemoryDiagnostic
+\Microsoft\Windows\MemoryDiagnostic\,ProcessMemoryDiagnosticEvents
+\Microsoft\Windows\Diagnosis\,Scheduled
+\Microsoft\Windows\Wininet\,CacheTask
+
+\Microsoft\Windows\Flighting\FeatureConfig\,UsageDataReporting
+\Microsoft\Windows\PI\,Sqm-Tasks
+\Microsoft\Windows\Sustainability\,SustainabilityTelemetry
+\Microsoft\Windows\ConsentUX\UnifiedConsent\,UnifiedConsentSyncTask
+\Microsoft\Windows\Application Experience\,PcaPatchDbTask
+\Microsoft\Windows\TPM\,Tpm-PreAttestationHealthCheck
+\Microsoft\Windows\CertificateServicesClient\,AikCertEnrollTask
+\Microsoft\Windows\AppxDeploymentClient\,UCPD velocity
+
+\Microsoft\Windows\International\,Synchronize Language Settings
+\Microsoft\Windows\Shell\,ThemesSyncedImageDownload
+\Microsoft\Windows\WlanSvc\,CDSSync
+\Microsoft\Windows\AppListBackup\,Backup
+\Microsoft\Windows\Time Zone\,SynchronizeTimeZone
+\Microsoft\Windows\ApplicationData\,appuriverifierdaily
+\Microsoft\Windows\Network Connectivity Status Indicator\,NcsiIdentifyUserProxies
+
+\Microsoft\XblGameSave\,XblGameSaveTask
+\Microsoft\Windows\FileHistory\,File History (maintenance mode)
+\Microsoft\Windows\InstallService\,SmartRetry
+\Microsoft\Windows\Printing\,PrintJobCleanupTask
+\Microsoft\Windows\Shell\,IndexerAutomaticMaintenance
+\Microsoft\Windows\ApplicationData\,DsSvcCleanup
+\Microsoft\Windows\License Manager\,TempSignedLicenseExchange
+"@ | ConvertFrom-Csv
+foreach ($t in $Tasks) {
+    Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
+}
+
 write-host "Stopping Update Services" -ForegroundColor red
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null
@@ -578,7 +625,6 @@ for ($i = $total; $i -ge 0; $i--) {
     Start-Sleep -Seconds 1
 }
 Write-Progress -Activity "Waiting" -Completed
-
 write-host "Releasing Memory" -ForegroundColor red
 Set-Location $env:SystemDrive\
 if (Test-Path ".\memreduct.exe") {
@@ -586,17 +632,15 @@ if (Test-Path ".\memreduct.exe") {
     Start-Sleep -Seconds 5
     taskkill /IM memreduct.exe /F *>$null
 }
-
 write-host "Stopping Processes" -ForegroundColor red
-Get-Process -Name *TextInputHost* -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name *TiWorker* -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name *dllhost* -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name *taskhostw* -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name *WmiPrvSE* -ErrorAction SilentlyContinue | Stop-Process -Force
+Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
 write-host "Setting Services" -ForegroundColor red
 Set-Services
-Stop-Service -Name WaaSMedicSvc,DoSvc,TrustedInstaller,WPDBusEnum,AppXSvc,WinHttpAutoProxySvc -ErrorAction SilentlyContinue
 
 write-host "Done" -ForegroundColor red
 pause

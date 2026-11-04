@@ -159,7 +159,6 @@ defragsvc,Manual,Manual,False,Optimize Drives
 diagnosticshub.standardcollector.service,Manual,Manual,False,Microsoft (R) Diagnostics Hub Standard Collector Service
 embeddedmode,Manual,Manual,False,Embedded Mode
 gpsvc,Automatic,Automatic,False,Group Policy Client
-hidserv,Manual,Manual,False,Human Interface Device Service
 icssvc,Manual,Manual,False,Windows Mobile Hotspot Service
 lltdsvc,Manual,Manual,False,Link-Layer Topology Discovery Mapper
 mpssvc,Automatic,Automatic,False,Windows Defender Firewall
@@ -236,6 +235,7 @@ StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
 TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
 ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
 DeviceAssociationService,Disabled,Manual,True,Device Association Service
+hidserv,Disabled,Manual,True,Human Interface Device Service
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
@@ -597,6 +597,38 @@ foreach ($t in $Tasks) {
     Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
 }
 
+$psexec = "$env:SystemDrive\PsExec64.exe"
+if (Test-Path $psexec) {
+    Set-Service LanmanWorkstation -StartupType Manual
+    Set-Service LanmanServer -StartupType Manual
+    Start-Service LanmanWorkstation, LanmanServer
+
+    $protectedTasks = @"
+TaskPath,TaskName
+\Microsoft\Windows\WindowsAI\Recall\,PolicyConfiguration
+\Microsoft\Windows\WindowsAI\Settings\,InitialConfiguration
+\Microsoft\Windows\DeviceDirectoryClient\,IntegrityCheck
+\Microsoft\Windows\DeviceDirectoryClient\,RegisterUserDevice
+\Microsoft\Windows\DeviceDirectoryClient\,RegisterDeviceAccountChange
+\Microsoft\Windows\Device Setup\,Metadata Refresh
+\Microsoft\Windows\WaaSMedic\,PerformRemediation
+\Microsoft\Windows\UpdateOrchestrator\,UIEOrchestrator
+"@ | ConvertFrom-Csv
+    foreach ($t in $protectedTasks) {
+        & $psexec -accepteula -nobanner -s schtasks.exe /Change /TN "$($t.TaskPath)$($t.TaskName)" /DISABLE *>$null
+    }
+
+    $protectedServices = "WaaSMedicSvc", "wscsvc", "DoSvc"
+    foreach ($s in $protectedServices) {
+        & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\$s" /v Start /t REG_DWORD /d 4 /f *>$null
+        & $psexec -accepteula -nobanner -s net.exe stop $s *>$null
+    }
+
+    Set-Service LanmanServer -StartupType Disabled
+    Set-Service LanmanWorkstation -StartupType Disabled
+    Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
+}
+
 write-host "Stopping Update Services" -ForegroundColor red
 sc config BITS start=disabled > $null
 sc config UsoSvc start=disabled > $null
@@ -606,7 +638,7 @@ net stop UsoSvc *>&1 | Out-Null
 net stop wuauserv *>&1 | Out-Null
 net stop DoSvc *>&1 | Out-Null
 
-write-host "Killing Smartscreen.exe and usoclient.exe" -ForegroundColor red
+write-host "Killing Smartscreen.exe, usoclient.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
@@ -621,6 +653,7 @@ foreach ($file in $files) {
     $newName = (Split-Path $file -Leaf) + ".old"
     Rename-Item -Path $file -NewName $newName -Force
 }
+Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
 write-host "Waiting 3 minutes to stop lingering processes/services" -ForegroundColor red
 $total = 180
@@ -638,12 +671,6 @@ if (Test-Path ".\memreduct.exe") {
     Start-Sleep -Seconds 5
     taskkill /IM memreduct.exe /F *>$null
 }
-write-host "Stopping Processes" -ForegroundColor red
-Get-Process -Name *TiWorker* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *dllhost* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *taskhostw* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *WmiPrvSE* -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
 write-host "Setting Services" -ForegroundColor red
 Set-Services

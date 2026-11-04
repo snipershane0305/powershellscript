@@ -332,7 +332,6 @@ function Set-Services {
     if ($forcestopList.Count -gt 0) { Stop-Service -Name $forcestopList -Force -ErrorAction SilentlyContinue }
 }
 Set-Services
-Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" -Name Start -Value 4 | Out-Null
 
 write-host "Deleting Temp Files" -ForegroundColor red
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null

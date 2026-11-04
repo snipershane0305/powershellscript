@@ -48,8 +48,6 @@ EventLog,Automatic,Automatic,False,Windows Event Log
 EventSystem,Automatic,Automatic,False,COM+ Event System
 Fax,Manual,Manual,False,Fax
 FontCache,Automatic,Automatic,False,Windows Font Cache Service
-FrameServer,Manual,Manual,False,Windows Camera Frame Server
-FrameServerMonitor,Manual,Manual,False,Windows Camera Frame Server Monitor
 GraphicsPerfSvc,Manual,Manual,False,GraphicsPerfSvc
 HomeGroupListener,Manual,Manual,False,HomeGroup Listener
 HomeGroupProvider,Manual,Manual,False,HomeGroup Provider
@@ -148,7 +146,6 @@ Winmgmt,Automatic,Automatic,False,Windows Management Instrumentation
 WlanSvc,Automatic,Automatic,False,WLAN AutoConfig
 WpcMonSvc,Manual,Manual,False,Parental Controls
 WpnService,Manual,Automatic,False,Windows Push Notifications System Service
-WpnUserService_*,Automatic,Automatic,False,Windows Push Notifications User Service
 WwanSvc,Manual,Manual,False,WWAN AutoConfig
 XblAuthManager,Manual,Manual,False,Xbox Live Auth Manager
 XblGameSave,Manual,Manual,False,Xbox Live Game Save
@@ -195,9 +192,9 @@ wlidsvc,Manual,Manual,False,Microsoft Account Sign-in Assistant
 wlpasvc,Manual,Manual,False,Local Profile Assistant Service
 wmiApSrv,Manual,Manual,False,WMI Performance Adapter
 workfolderssvc,Manual,Manual,False,Work Folders
-wscsvc,Manual,Automatic,False,Security Center
 wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framework
 NetSetupSvc,Manual,Manual,False,Network Setup Service
+WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"
@@ -237,7 +234,6 @@ dot3svc,Disabled,Manual,True,Wired AutoConfig
 whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
 StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
 TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
-WinHttpAutoProxySvc,Disabled,Manual,True,WinHTTP Web Proxy Auto-Discovery Service
 ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
 DeviceAssociationService,Disabled,Manual,True,Device Association Service
 
@@ -255,6 +251,7 @@ lfsvc,Disabled,Manual,True,Geolocation Service
 MapsBroker,Disabled,Automatic,True,Downloaded Maps Manager
 WerSvc,Disabled,Manual,True,Windows Error Reporting Service
 DsSvc,Disabled,Manual,True,Data Sharing Service
+wscsvc,Disabled,Automatic,True,Security Center
 
 SSDPSRV,Disabled,Manual,True,SSDP Discovery
 fdPHost,Disabled,Manual,True,Function Discovery Provider Host
@@ -307,6 +304,9 @@ cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
 DusmSvc,Manual,Automatic,True,Data Usage
 iphlpsvc,Manual,Automatic,True,IP Helper
 AppXSvc,Manual,Manual,True,AppX Deployment Service
+WpnUserService_*,Manual,Automatic,True,Windows Push Notifications User Service
+FrameServer,Manual,Manual,True,Windows Camera Frame Server
+FrameServerMonitor,Manual,Manual,True,Windows Camera Frame Server Monitor
 "@ | ConvertFrom-Csv
 
 function Set-Services {
@@ -546,6 +546,21 @@ TaskPath,TaskName
 \Microsoft\Windows\Sysmain\,WsSwapAssessmentTask
 \Microsoft\Windows\Maintenance\,WinSAT
 
+\Microsoft\Windows\ExploitGuard\,ExploitGuard MDM policy Refresh
+\Microsoft\Windows\Power Efficiency Diagnostics\,AnalyzeSystem
+\Microsoft\Windows\Device Setup\,Metadata Refresh
+\Microsoft\Windows\DeviceDirectoryClient\,IntegrityCheck
+\Microsoft\Windows\DeviceDirectoryClient\,RegisterUserDevice
+\Microsoft\Windows\DeviceDirectoryClient\,RegisterDeviceAccountChange
+\Microsoft\Windows\Management\Provisioning\,Logon
+\Microsoft\Windows\DiskFootprint\,StorageSense
+\Microsoft\Windows\DiskCleanup\,SilentCleanup
+\Microsoft\Windows\Servicing\,StartComponentCleanup
+\Microsoft\Windows\WindowsAI\Settings\,InitialConfiguration
+\Microsoft\Windows\WindowsAI\Recall\,PolicyConfiguration
+\Microsoft\Windows\CertificateServicesClient\,KeyPreGenTask
+\Microsoft\Windows\WindowsColorSystem\,Calibration Loader
+
 \Microsoft\Windows\Setup\,PITRTask
 \Microsoft\Windows\Setup\,SetupRecoveryDataTask
 \Microsoft\Windows\DiskFootprint\,Diagnostics
@@ -601,6 +616,7 @@ write-host "Killing Smartscreen.exe and usoclient.exe" -ForegroundColor red
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
+    "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
 )
 foreach ($file in $files) {
     if (-not (Test-Path $file)) {

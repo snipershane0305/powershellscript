@@ -548,16 +548,10 @@ TaskPath,TaskName
 
 \Microsoft\Windows\ExploitGuard\,ExploitGuard MDM policy Refresh
 \Microsoft\Windows\Power Efficiency Diagnostics\,AnalyzeSystem
-\Microsoft\Windows\Device Setup\,Metadata Refresh
-\Microsoft\Windows\DeviceDirectoryClient\,IntegrityCheck
-\Microsoft\Windows\DeviceDirectoryClient\,RegisterUserDevice
-\Microsoft\Windows\DeviceDirectoryClient\,RegisterDeviceAccountChange
 \Microsoft\Windows\Management\Provisioning\,Logon
 \Microsoft\Windows\DiskFootprint\,StorageSense
 \Microsoft\Windows\DiskCleanup\,SilentCleanup
 \Microsoft\Windows\Servicing\,StartComponentCleanup
-\Microsoft\Windows\WindowsAI\Settings\,InitialConfiguration
-\Microsoft\Windows\WindowsAI\Recall\,PolicyConfiguration
 \Microsoft\Windows\CertificateServicesClient\,KeyPreGenTask
 \Microsoft\Windows\WindowsColorSystem\,Calibration Loader
 

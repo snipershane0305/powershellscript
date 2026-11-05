@@ -397,7 +397,7 @@ Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2}
 
 Write-Host "Editing Host File" -ForegroundColor red    
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-$blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com", "inputsuggestions.msdxcdn.microsoft.com"
+$blocklist = "services.gfe.nvidia.com", "inputsuggestions.msdxcdn.microsoft.com"
 $changed = $false
 foreach ($domain in $blocklist) {
     if ((Get-Content $hostsPath) -notcontains "0.0.0.0 $domain") {

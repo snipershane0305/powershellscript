@@ -737,7 +737,6 @@ TaskPath,TaskName
     Set-Service LanmanServer -StartupType Disabled
     Set-Service LanmanWorkstation -StartupType Disabled
     Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
-}
 
 write-host "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
 $files = @(

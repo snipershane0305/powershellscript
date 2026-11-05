@@ -645,9 +645,8 @@ TaskPath,TaskName
     Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
 }
 
-write-host "Killing Smartscreen.exe, usoclient.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
+write-host "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
 $files = @(
-    "$env:SystemDrive\WINDOWS\system32\usoclient.exe",
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
     "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
 )

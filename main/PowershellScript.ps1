@@ -1,6 +1,6 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
-write-host "Running IdleTasks" -ForegroundColor red
+write-host "Running Idle Tasks" -ForegroundColor red
 Rundll32.exe advapi32.dll,ProcessIdleTasks
 
 write-host "Setting Services" -ForegroundColor red
@@ -344,7 +344,7 @@ write-host "Disabling Powershell Telemetry" -ForegroundColor red
 write-host "Disabling Hibernation" -ForegroundColor red
 powercfg.exe /hibernate off
 
-write-host "Disabling memory compression" -ForegroundColor red
+write-host "Disabling Memory Compression" -ForegroundColor red
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
 
 write-host "Changing Boot Settings" -ForegroundColor red
@@ -359,7 +359,7 @@ bcdedit /set x2apicpolicy Enable *>$null
 bcdedit /set vsmlaunchtype off *>$null
 bcdedit /set hypervisorlaunchtype off *>$null
 
-write-host "Disabling LastAccess" -ForegroundColor red
+write-host "Disabling Last Access" -ForegroundColor red
 fsutil behavior set disablelastaccess 1 *>$null
 
 write-host "Changing Network Settings" -ForegroundColor red
@@ -395,7 +395,7 @@ Write-Host "Disabling NetBIOS" -ForegroundColor red
 Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
 Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null
 
-Write-Host "Editing host file" -ForegroundColor red    
+Write-Host "Editing Host File" -ForegroundColor red    
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $blocklist = "services.gfe.nvidia.com", "settings-win.data.microsoft.com", "inputsuggestions.msdxcdn.microsoft.com"
 $changed = $false
@@ -512,7 +512,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad")) { New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" | Out-Null }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Wpad" -Name "WpadOverride" -Type DWord -Value 1
 
-write-host "Disabling ScheduledTasks" -ForegroundColor red
+write-host "Disabling Scheduled Tasks" -ForegroundColor red
 $Tasks = @"
 TaskPath,TaskName
 \Microsoft\Windows\WindowsUpdate\,Scheduled Start
@@ -599,10 +599,6 @@ foreach ($t in $Tasks) {
 
 $psexec = "$env:SystemDrive\PsExec64.exe"
 if (Test-Path $psexec) {
-    Set-Service LanmanWorkstation -StartupType Manual
-    Set-Service LanmanServer -StartupType Manual
-    Start-Service LanmanWorkstation, LanmanServer
-
     $protectedTasks = @"
 TaskPath,TaskName
 \Microsoft\Windows\WindowsAI\Recall\,PolicyConfiguration
@@ -613,30 +609,41 @@ TaskPath,TaskName
 \Microsoft\Windows\Device Setup\,Metadata Refresh
 \Microsoft\Windows\WaaSMedic\,PerformRemediation
 \Microsoft\Windows\UpdateOrchestrator\,UIEOrchestrator
+\Microsoft\Windows\Kernel\,La57Cleanup
 "@ | ConvertFrom-Csv
-    foreach ($t in $protectedTasks) {
-        & $psexec -accepteula -nobanner -s schtasks.exe /Change /TN "$($t.TaskPath)$($t.TaskName)" /DISABLE *>$null
+
+    $pendingTasks = $protectedTasks | Where-Object {
+        $t = Get-ScheduledTask -TaskPath $_.TaskPath -TaskName $_.TaskName -ErrorAction SilentlyContinue
+        $t -and $t.State -ne 'Disabled'
+    }
+    $pendingServices = "WaaSMedicSvc", "wscsvc", "DoSvc" | Where-Object {
+        $s = Get-Service $_ -ErrorAction SilentlyContinue
+        $s -and $s.StartType -ne 'Disabled'
     }
 
-    $protectedServices = "WaaSMedicSvc", "wscsvc", "DoSvc"
-    foreach ($s in $protectedServices) {
-        & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\$s" /v Start /t REG_DWORD /d 4 /f *>$null
-        & $psexec -accepteula -nobanner -s net.exe stop $s *>$null
+    if ($pendingTasks -or $pendingServices) {
+        Set-Service LanmanWorkstation -StartupType Manual
+        Set-Service LanmanServer -StartupType Manual
+        Start-Service LanmanWorkstation, LanmanServer
+
+        foreach ($t in $pendingTasks) {
+            & $psexec -accepteula -nobanner -s schtasks.exe /Change /TN "$($t.TaskPath)$($t.TaskName)" /DISABLE *>$null
+        }
+        foreach ($s in $pendingServices) {
+            & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\$s" /v Start /t REG_DWORD /d 4 /f *>$null
+            & $psexec -accepteula -nobanner -s net.exe stop $s *>$null
+        }
+
+        Set-Service LanmanServer -StartupType Disabled
+        Set-Service LanmanWorkstation -StartupType Disabled
+        Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
     }
+}
 
     Set-Service LanmanServer -StartupType Disabled
     Set-Service LanmanWorkstation -StartupType Disabled
     Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
 }
-
-write-host "Stopping Update Services" -ForegroundColor red
-sc config BITS start=disabled > $null
-sc config UsoSvc start=disabled > $null
-sc config wuauserv start=disabled > $null
-net stop BITS *>&1 | Out-Null
-net stop UsoSvc *>&1 | Out-Null
-net stop wuauserv *>&1 | Out-Null
-net stop DoSvc *>&1 | Out-Null
 
 write-host "Killing Smartscreen.exe, usoclient.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
 $files = @(

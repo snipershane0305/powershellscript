@@ -365,7 +365,6 @@ fsutil behavior set disablelastaccess 1 *>$null
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
-netsh int tcp set global timestamps=enabled | Out-Null
 netsh int teredo set state disabled | Out-Null
 netsh int 6to4 set state disabled | Out-Null
 netsh int isatap set state disabled | Out-Null
@@ -377,20 +376,6 @@ Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
 
-Write-Host "Disabling Nagle Algorithm" -ForegroundColor red
-Get-NetAdapter -Physical |
-    Where-Object Status -eq "Up" |
-    ForEach-Object {
-        if (-not (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)")) {
-            New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)" -Name "TcpNoDelay" -Value 1
-    }
-Get-NetAdapter -Physical | ForEach-Object {
-    $p = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($_.InterfaceGuid)"
-    if (-not (Test-Path $p)) { New-Item -Path $p -Force | Out-Null }
-    Set-ItemProperty -Path $p -Name "TcpAckFrequency" -Value 1
-}
 Write-Host "Disabling NetBIOS" -ForegroundColor red
 Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
 Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null

@@ -348,17 +348,19 @@ write-host "Disabling Memory Compression" -ForegroundColor red
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
 
 write-host "Changing Boot Settings" -ForegroundColor red
-bcdedit /deletevalue useplatformclock *>$null
-bcdedit /deletevalue tscsyncpolicy *>$null
-bcdedit /deletevalue x2apicpolicy *>$null
-bcdedit /deletevalue vsmlaunchtype *>$null
-bcdedit /deletevalue hypervisorlaunchtype *>$null
-bcdedit /set useplatformclock no *>$null #DANGEROUS
-bcdedit /set tscsyncpolicy legacy *>$null
-bcdedit /set x2apicpolicy Enable *>$null
-bcdedit /set vsmlaunchtype off *>$null
-bcdedit /set hypervisorlaunchtype off *>$null
+$bcd = @{
+    useplatformclock="no"
+    tscsyncpolicy="legacy"
+    x2apicpolicy="Enable"
+    vsmlaunchtype="off"
+    hypervisorlaunchtype="off"
+}
 
+foreach ($key in $bcd.Keys) {
+    if ((bcdedit /enum '{current}' | Out-String) -notmatch "(?im)^\s*$key\s+$($bcd[$key])\s*$") {
+        bcdedit /set $key $bcd[$key] *> $null
+    }
+}
 write-host "Disabling Last Access" -ForegroundColor red
 fsutil behavior set disablelastaccess 1 *>$null
 

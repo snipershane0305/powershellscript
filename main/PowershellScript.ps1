@@ -741,6 +741,42 @@ foreach ($file in $files) {
 }
 Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
+write-host "Setting Power Plan" -ForegroundColor red
+$planGuid = "5a4d0a2e-7c3b-4f1e-9d3a-6b1c2e8f4a10"
+$powerCsv = @"
+SubGroup,Setting,Value
+SUB_PROCESSOR,PROCTHROTTLEMIN,5
+SUB_PROCESSOR,PROCTHROTTLEMAX,100
+SUB_PROCESSOR,PERFBOOSTMODE,2
+SUB_PROCESSOR,PERFEPP,25
+SUB_PROCESSOR,CPMINCORES,100
+SUB_PROCESSOR,CPMAXCORES,100
+SUB_PROCESSOR,IDLEDISABLE,0
+SUB_PROCESSOR,SYSCOOLPOL,1
+SUB_PCIEXPRESS,ASPM,0
+2a737441-1930-4402-8d77-b2bebba308a3,48e6b7a6-50f5-4782-a5d4-53bb8f07e226,0
+2a737441-1930-4402-8d77-b2bebba308a3,d4e98f31-5ffe-4ce1-be31-1b38b384c009,0
+19cbb8fa-5279-450e-9fac-8a3d5fedd0c1,12bbebe6-58d6-4636-95bb-3217ef867c1a,0
+SUB_SLEEP,STANDBYIDLE,0
+SUB_VIDEO,VIDEOIDLE,0
+"@
+$regPath = "HKLM:\SOFTWARE\CustomPowerPlan"
+$applied = (Get-ItemProperty -Path $regPath -Name "Applied" -ErrorAction SilentlyContinue).Applied
+$exists  = [bool](powercfg /list | Select-String $planGuid)
+$active  = [bool]((powercfg /getactivescheme) -match $planGuid)
+if (-not $exists -or -not $active -or $applied -ne $powerCsv) {
+    if (-not $exists) {
+        powercfg /duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e $planGuid | Out-Null
+        powercfg /changename $planGuid "Custom Performance" "Fast ramp-up, normal idle" | Out-Null
+    }
+    foreach ($s in ($powerCsv | ConvertFrom-Csv)) {
+        powercfg /setacvalueindex $planGuid $s.SubGroup $s.Setting $s.Value | Out-Null
+    }
+    powercfg /setactive $planGuid | Out-Null
+    if (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
+    Set-ItemProperty -Path $regPath -Name "Applied" -Type String -Value $powerCsv
+}
+
 write-host "Waiting 3 minutes to stop lingering processes/services" -ForegroundColor red
 $total = 180
 for ($i = $total; $i -ge 0; $i--) {

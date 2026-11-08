@@ -372,8 +372,9 @@ foreach ($key in $bcd.Keys) {
         bcdedit /set $key $bcd[$key] *> $null
     }
 }
-write-host "Disabling Last Access" -ForegroundColor red
+write-host "Chaning File System Settings" -ForegroundColor red
 fsutil behavior set disablelastaccess 1 *>$null
+fsutil behavior set disable8dot3 1 *>$null
 
 write-host "Changing Network Settings" -ForegroundColor red
 netsh int tcp set global rss=enabled | Out-Null

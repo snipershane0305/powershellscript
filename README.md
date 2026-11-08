@@ -7,9 +7,8 @@ Also check the wiki section for more information about these configurations. htt
 
 # How to Use
 
-To use this script as intended, put the StartUpScript.ps1 file in `C:\Users\YOUR USERNAME HERE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup` folder, anything in this directory will start when you login to windows.
+To use this script as intended, put PowershellScript.ps1, memreduct.exe, PsExec64.exe, and SetTimerResolution.exe into the "C:\" directory or whatever drive windows is installed on, then run the PowershellScript.ps1 once and it will create a scheduled task so it will run automatically on logon.
 
-Then put the PowershellScript.ps1, memreduct.exe, and SetTimerResolution.exe into the "C:\" directory or whatever drive windows is installed on.
 
 # Extra Information
 

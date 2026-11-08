@@ -415,7 +415,7 @@ if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Op
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 1
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")) { New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" | Out-Null }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Type DWord -Value 0
-if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\DWM")) { New-Item -Path "HKCU\Software\Microsoft\Windows\DWM" | Out-Null }
+if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\DWM")) { New-Item -Path "HKCU:\Software\Microsoft\Windows\DWM" | Out-Null }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
 if (-not (Test-Path "HKCU:\Control Panel\Desktop")) { New-Item -Path "HKCU:\Control Panel\Desktop" | Out-Null }
 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothing" -Type String -Value 0
@@ -688,7 +688,16 @@ TaskPath,TaskName
 foreach ($t in $Tasks) {
     Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
 }
-
+write-host "Disabling Trace Loggers" -ForegroundColor red
+$loggers = "CimFSUnionFS-Filter", "Circular Kernel Context Logger", "DefenderApiLogger", "DefenderAuditLogger", "DiagLog", "Diagtrack-Listener", "FilterMgr-Logger", "LwtNetLog", "Microsoft-Windows-Rdp-Graphics-RdpIdd-Trace", "NetCore", "NtfsLog", "RadioMgr", "ReFSLog", "UBPM", "WdiContextLog", "WiFiDriverIHVSession", "WiFiDriverIHVSessionRepro", "WiFiSession"
+$pendingLoggers = @()
+foreach ($l in $loggers) {
+    $p = "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\$l"
+    if (-not (Test-Path $p)) { continue }
+    if ((Get-ItemProperty -Path $p -Name "Start" -ErrorAction SilentlyContinue).Start -eq 0) { continue }
+    Set-ItemProperty -Path $p -Name "Start" -Type DWord -Value 0 -ErrorAction SilentlyContinue
+    if ((Get-ItemProperty -Path $p -Name "Start" -ErrorAction SilentlyContinue).Start -ne 0) { $pendingLoggers += $l }
+}
 $psexec = "$env:SystemDrive\PsExec64.exe"
 if (Test-Path $psexec) {
     $protectedTasks = @"
@@ -713,7 +722,7 @@ TaskPath,TaskName
         $s -and $s.StartType -ne 'Disabled'
     }
 
-    if ($pendingTasks -or $pendingServices) {
+   if ($pendingTasks -or $pendingServices -or $pendingLoggers) {
         Set-Service LanmanWorkstation -StartupType Manual
         Set-Service LanmanServer -StartupType Manual
         Start-Service LanmanWorkstation, LanmanServer
@@ -725,17 +734,14 @@ TaskPath,TaskName
             & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\$s" /v Start /t REG_DWORD /d 4 /f *>$null
             & $psexec -accepteula -nobanner -s net.exe stop $s *>$null
         }
-
+        foreach ($l in $pendingLoggers) {
+       & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\Autologger\$l" /v Start /t REG_DWORD /d 0 /f *>$null
+   }
         Set-Service LanmanServer -StartupType Disabled
         Set-Service LanmanWorkstation -StartupType Disabled
         Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
     }
 }
-
-    Set-Service LanmanServer -StartupType Disabled
-    Set-Service LanmanWorkstation -StartupType Disabled
-    Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
-
 write-host "Setting Power Plan" -ForegroundColor red
 $planGuid = "5a4d0a2e-7c3b-4f1e-9d3a-6b1c2e8f4a10"
 $powerCsv = @"

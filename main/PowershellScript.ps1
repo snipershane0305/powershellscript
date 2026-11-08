@@ -1,5 +1,16 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
+$taskName = "powershellscript"
+$taskUser = "$env:USERDOMAIN\$env:USERNAME"
+if (-not (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)) {
+    write-host "Installed Logon Task" -ForegroundColor red
+    $action    = New-ScheduledTaskAction -Execute (Get-Process -Id $PID).Path -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
+    $trigger   = New-ScheduledTaskTrigger -AtLogOn -User $taskUser
+    $trigger.Delay = "PT10S"
+    $principal = New-ScheduledTaskPrincipal -UserId $taskUser -LogonType Interactive -RunLevel Highest
+    $settings  = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
+}
 write-host "Running Idle Tasks" -ForegroundColor red
 Rundll32.exe advapi32.dll,ProcessIdleTasks
 
@@ -725,22 +736,6 @@ TaskPath,TaskName
     Set-Service LanmanWorkstation -StartupType Disabled
     Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
 
-write-host "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
-$files = @(
-    "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
-    "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
-)
-foreach ($file in $files) {
-    if (-not (Test-Path $file)) {
-        continue
-    }
-    takeown /f $file /a | Out-Null
-    icacls $file /grant "*S-1-5-32-544:F" | Out-Null
-    $newName = (Split-Path $file -Leaf) + ".old"
-    Rename-Item -Path $file -NewName $newName -Force
-}
-Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
-
 write-host "Setting Power Plan" -ForegroundColor red
 $planGuid = "5a4d0a2e-7c3b-4f1e-9d3a-6b1c2e8f4a10"
 $powerCsv = @"
@@ -776,6 +771,21 @@ if (-not $exists -or -not $active -or $applied -ne $powerCsv) {
     if (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
     Set-ItemProperty -Path $regPath -Name "Applied" -Type String -Value $powerCsv
 }
+write-host "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
+$files = @(
+    "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
+    "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
+)
+foreach ($file in $files) {
+    if (-not (Test-Path $file)) {
+        continue
+    }
+    takeown /f $file /a | Out-Null
+    icacls $file /grant "*S-1-5-32-544:F" | Out-Null
+    $newName = (Split-Path $file -Leaf) + ".old"
+    Rename-Item -Path $file -NewName $newName -Force
+}
+Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
 write-host "Waiting 3 minutes to stop lingering processes/services" -ForegroundColor red
 $total = 180
@@ -793,7 +803,6 @@ if (Test-Path ".\memreduct.exe") {
     Start-Sleep -Seconds 5
     taskkill /IM memreduct.exe /F *>$null
 }
-
 write-host "Setting Services" -ForegroundColor red
 Set-Services
 

@@ -689,7 +689,7 @@ foreach ($t in $Tasks) {
     Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
 }
 write-host "Disabling Trace Loggers" -ForegroundColor red
-$loggers = "CimFSUnionFS-Filter", "Circular Kernel Context Logger", "DefenderApiLogger", "DefenderAuditLogger", "DiagLog", "Diagtrack-Listener", "FilterMgr-Logger", "LwtNetLog", "Microsoft-Windows-Rdp-Graphics-RdpIdd-Trace", "NetCore", "NtfsLog", "RadioMgr", "ReFSLog", "UBPM", "WdiContextLog", "WiFiDriverIHVSession", "WiFiDriverIHVSessionRepro", "WiFiSession"
+$loggers = "CimFSUnionFS-Filter", "Circular Kernel Context Logger", "DefenderApiLogger", "DefenderAuditLogger", "DiagLog", "Diagtrack-Listener", "FilterMgr-Logger", "LwtNetLog", "Microsoft-Windows-Rdp-Graphics-RdpIdd-Trace", "NtfsLog", "ReFSLog", "UBPM", "WdiContextLog", "WiFiDriverIHVSession", "WiFiDriverIHVSessionRepro", "WiFiSession"
 $pendingLoggers = @()
 foreach ($l in $loggers) {
     $p = "HKLM:\SYSTEM\CurrentControlSet\Control\WMI\Autologger\$l"

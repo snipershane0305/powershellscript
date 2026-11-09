@@ -375,7 +375,7 @@ foreach ($key in $bcd.Keys) {
     }
 }
 Say "Changing File System Settings"
-fsutil behavior set disablelastaccess 1 *>$null
+if ((fsutil behavior query disablelastaccess | Out-String) -notmatch 'registry state is:\s*1') { fsutil behavior set disablelastaccess 1 *>$null }
 if ((fsutil behavior query disable8dot3 | Out-String) -notmatch 'registry state is:\s*1') { fsutil behavior set disable8dot3 1 *>$null }
 
 Say "Changing Network Settings"

@@ -1,20 +1,22 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Import-Module ScheduledTasks, NetAdapter, NetTCPIP, DnsClient -ErrorAction SilentlyContinue
+$sw = [Diagnostics.Stopwatch]::StartNew()
+function Say($m) { Write-Host ("{0,6:N1}s  {1}" -f $sw.Elapsed.TotalSeconds, $m) }
 $taskName = "powershellscript"
 $taskUser = "$env:USERDOMAIN\$env:USERNAME"
 if (-not (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)) {
-    write-host "Installed Logon Task" -ForegroundColor red
-    $action    = New-ScheduledTaskAction -Execute (Get-Process -Id $PID).Path -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
+    Say "Installed Logon Task"
+    $action    = New-ScheduledTaskAction -Execute (Get-Process -Id $PID).Path -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -File `"$PSCommandPath`""
     $trigger   = New-ScheduledTaskTrigger -AtLogOn -User $taskUser
     $trigger.Delay = "PT10S"
     $principal = New-ScheduledTaskPrincipal -UserId $taskUser -LogonType Interactive -RunLevel Highest
     $settings  = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
     Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
 }
-write-host "Running Idle Tasks" -ForegroundColor red
+Say "Running Idle Tasks"
 Rundll32.exe advapi32.dll,ProcessIdleTasks
 
-write-host "Setting Services" -ForegroundColor red
+Say "Setting Services"
 $manualServices = @"
 Name,StartupType,OriginalType,ForceStop,DisplayName
 ALG,Manual,Manual,False,Application Layer Gateway Service
@@ -344,21 +346,21 @@ function Set-Services {
 }
 Set-Services
 
-write-host "Deleting Temp Files" -ForegroundColor red
+Say "Deleting Temp Files"
 Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
 
-write-host "Disabling Powershell Telemetry" -ForegroundColor red
+Say "Disabling Powershell Telemetry"
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 [System.Environment]::SetEnvironmentVariable('POWERSHELL_UPDATECHECK', 'Off', 'Machine')
 
-write-host "Disabling Hibernation" -ForegroundColor red
+Say "Disabling Hibernation"
 powercfg.exe /hibernate off
 
-write-host "Disabling Memory Compression" -ForegroundColor red
+Say "Disabling Memory Compression"
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue | Out-Null
 
-write-host "Changing Boot Settings" -ForegroundColor red
+Say "Changing Boot Settings"
 $bcd = @{
     useplatformclock="no"
     tscsyncpolicy="legacy"
@@ -372,11 +374,11 @@ foreach ($key in $bcd.Keys) {
         bcdedit /set $key $bcd[$key] *> $null
     }
 }
-write-host "Chaning File System Settings" -ForegroundColor red
+Say "Changing File System Settings"
 fsutil behavior set disablelastaccess 1 *>$null
-fsutil behavior set disable8dot3 1 *>$null
+if ((fsutil behavior query disable8dot3 | Out-String) -notmatch 'registry state is:\s*1') { fsutil behavior set disable8dot3 1 *>$null }
 
-write-host "Changing Network Settings" -ForegroundColor red
+Say "Changing Network Settings"
 netsh int tcp set global rss=enabled | Out-Null
 Enable-NetAdapterRss -Name *
 netsh int teredo set state disabled | Out-Null
@@ -390,11 +392,11 @@ Disable-NetAdapterRsc -Name *
 Set-NetOffloadGlobalSetting -PacketCoalescingFilter Disabled
 Enable-NetAdapterChecksumOffload -Name *
 
-Write-Host "Disabling NetBIOS" -ForegroundColor red
+Say "Disabling NetBIOS"
 Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled=TRUE" |
 Invoke-CimMethod -MethodName SetTcpipNetbios -Arguments @{TcpipNetbiosOptions=2} | Out-Null
 
-Write-Host "Editing Host File" -ForegroundColor red    
+Say "Editing Host File"
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $blocklist = "services.gfe.nvidia.com", "inputsuggestions.msdxcdn.microsoft.com"
 $changed = $false
@@ -406,7 +408,7 @@ foreach ($domain in $blocklist) {
 }
 if ($changed) { Clear-DnsClientCache }
 
-write-host "Changing Registry Settings" -ForegroundColor red
+Say "Changing Registry Settings"
 if (-not (Test-Path "HKCU:\Control Panel\Mouse")) { New-Item -Path "HKCU:\Control Panel\Mouse" | Out-Null }
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 0
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 0
@@ -426,6 +428,8 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowSleepOption" -Type DWord -Value 0
 if (-not (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power")) { New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" | Out-Null }
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0
+if (-not (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling")) { New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" | Out-Null }
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 1
 
 if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR")) { New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" | Out-Null }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
@@ -605,7 +609,7 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" -Na
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" -Name "NearShareChannelUserAuthzPolicy" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" -Name "RomeSdkChannelUserAuthzPolicy" -Type DWord -Value 0
 
-write-host "Disabling Scheduled Tasks" -ForegroundColor red
+Say "Disabling Scheduled Tasks"
 $Tasks = @"
 TaskPath,TaskName
 \Microsoft\Windows\WindowsUpdate\,Scheduled Start
@@ -686,10 +690,14 @@ TaskPath,TaskName
 \Microsoft\Windows\ApplicationData\,DsSvcCleanup
 \Microsoft\Windows\License Manager\,TempSignedLicenseExchange
 "@ | ConvertFrom-Csv
+$enabledTasks = @{}
+Get-ScheduledTask | Where-Object State -ne 'Disabled' | ForEach-Object { $enabledTasks["$($_.TaskPath)$($_.TaskName)"] = $true }
 foreach ($t in $Tasks) {
-    Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
+    if ($enabledTasks["$($t.TaskPath)$($t.TaskName)"]) {
+        Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
+    }
 }
-write-host "Disabling Trace Loggers" -ForegroundColor red
+Say "Disabling Trace Loggers"
 $loggers = "CimFSUnionFS-Filter", "Circular Kernel Context Logger", "DefenderApiLogger", "DefenderAuditLogger", "DiagLog", "Diagtrack-Listener", "FilterMgr-Logger", "LwtNetLog", "Microsoft-Windows-Rdp-Graphics-RdpIdd-Trace", "NtfsLog", "ReFSLog", "UBPM", "WdiContextLog", "WiFiDriverIHVSession", "WiFiDriverIHVSessionRepro", "WiFiSession"
 $pendingLoggers = @()
 foreach ($l in $loggers) {
@@ -723,7 +731,7 @@ TaskPath,TaskName
         $s -and $s.StartType -ne 'Disabled'
     }
 
-   if ($pendingTasks -or $pendingServices -or $pendingLoggers) {
+    if ($pendingTasks -or $pendingServices -or $pendingLoggers) {
         Set-Service LanmanWorkstation -StartupType Manual
         Set-Service LanmanServer -StartupType Manual
         Start-Service LanmanWorkstation, LanmanServer
@@ -736,14 +744,14 @@ TaskPath,TaskName
             & $psexec -accepteula -nobanner -s net.exe stop $s *>$null
         }
         foreach ($l in $pendingLoggers) {
-       & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\Autologger\$l" /v Start /t REG_DWORD /d 0 /f *>$null
-   }
+            & $psexec -accepteula -nobanner -s reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\Autologger\$l" /v Start /t REG_DWORD /d 0 /f *>$null
+        }
         Set-Service LanmanServer -StartupType Disabled
         Set-Service LanmanWorkstation -StartupType Disabled
         Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
     }
 }
-write-host "Setting Power Plan" -ForegroundColor red
+Say "Setting Power Plan"
 $planGuid = "5a4d0a2e-7c3b-4f1e-9d3a-6b1c2e8f4a10"
 $powerCsv = @"
 SubGroup,Setting,Value
@@ -778,7 +786,7 @@ if (-not $exists -or -not $active -or $applied -ne $powerCsv) {
     if (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
     Set-ItemProperty -Path $regPath -Name "Applied" -Type String -Value $powerCsv
 }
-write-host "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe" -ForegroundColor red
+Say "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe"
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
     "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
@@ -794,7 +802,7 @@ foreach ($file in $files) {
 }
 Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
-write-host "Waiting 3 minutes to stop lingering processes/services" -ForegroundColor red
+Say "Waiting 3 minutes to stop lingering processes/services"
 $total = 180
 for ($i = $total; $i -ge 0; $i--) {
     Write-Progress -Activity "Paused" `
@@ -803,15 +811,15 @@ for ($i = $total; $i -ge 0; $i--) {
     Start-Sleep -Seconds 1
 }
 Write-Progress -Activity "Waiting" -Completed
-write-host "Releasing Memory" -ForegroundColor red
+Say "Releasing Memory"
 Set-Location $env:SystemDrive\
 if (Test-Path ".\memreduct.exe") {
     Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
     Start-Sleep -Seconds 5
     taskkill /IM memreduct.exe /F *>$null
 }
-write-host "Setting Services" -ForegroundColor red
+Say "Setting Services"
 Set-Services
 
-write-host "Done" -ForegroundColor red
+Say "Done"
 pause

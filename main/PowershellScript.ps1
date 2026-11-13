@@ -356,8 +356,11 @@ function Set-Services {
 Set-Services
 
 Say "Deleting Temp Files"
-Get-ChildItem -Path "$env:TEMP\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
-Get-ChildItem -Path "$env:windir\Temp\" *.* -Recurse | Remove-Item -Force -Recurse 2>$null
+foreach ($p in "$env:windir\Prefetch\*", "$env:windir\Minidump\*", "$env:windir\LiveKernelReports\*", "$env:ProgramData\Microsoft\Windows\WER\ReportQueue\*", "$env:ProgramData\Microsoft\Windows\WER\ReportArchive\*", "$env:windir\ServiceProfiles\NetworkService\AppData\Local\Microsoft\Windows\DeliveryOptimization\Cache\*") {
+    Remove-Item -Path $p -Recurse -Force -ErrorAction SilentlyContinue
+}
+Remove-Item "$env:windir\MEMORY.DMP" -Force -ErrorAction SilentlyContinue
+Get-ChildItem "$env:windir\Logs\CBS" -Filter *.log | Where-Object LastWriteTime -lt (Get-Date).AddDays(-7) | Remove-Item -Force -ErrorAction SilentlyContinue
 
 Say "Disabling Powershell Telemetry"
 if ([Environment]::GetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', 'Machine') -ne '1') {
@@ -496,7 +499,7 @@ Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" "AutoDownload" 2
 
 #Network
 Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 0xffffffff
-Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0
+Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 10
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\AFD\Parameters" "FastSendDatagramThreshold" 0x10000
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" "EnableMulticast" 0
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" "DisableSmartNameResolution" 1
@@ -576,6 +579,33 @@ Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "EnableCdp" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "CdpSessionUserAuthzPolicy" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "NearShareChannelUserAuthzPolicy" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "RomeSdkChannelUserAuthzPolicy" 0
+
+Say "Changing Explorer and Shell Settings"
+if ((Get-ItemProperty -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" -Name "FolderType" -ErrorAction SilentlyContinue).FolderType -ne "NotSpecified") {
+    Remove-Item -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags", "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU" -Recurse -Force -ErrorAction SilentlyContinue
+}
+Set-Reg "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" "FolderType" "NotSpecified" String
+if (-not (Test-Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32")) {
+    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -Value "" | Out-Null
+}
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" "TaskbarEndTask" 1
+Set-Reg "HKCU:\Control Panel\Desktop" "MenuShowDelay" 0 String
+Set-Reg "HKCU:\Control Panel\Desktop\WindowMetrics" "MinAnimate" 0 String
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarAnimations" 0
+Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardDelay" 0 String
+Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardSpeed" 31 String
+
+Say "Changing Audio, Mouse and System Settings"
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Multimedia\Audio" "UserDuckingPreference" 3
+Set-Reg "HKCU:\Control Panel\Mouse" "MouseSensitivity" 10 String
+Set-Reg "HKLM:\SOFTWARE\Microsoft\FTH" "Enabled" 0
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" "CrashDumpEnabled" 3
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" "fDenyTSConnections" 1
+
+Say "Disabling Reserved Storage"
+if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" -Name "ShippedWithReserves" -ErrorAction SilentlyContinue).ShippedWithReserves -eq 1) {
+    dism /Online /Set-ReservedStorageState /State:Disabled | Out-Null
+}
 
 Say "Disabling Scheduled Tasks"
 $Tasks = @"
@@ -758,6 +788,7 @@ Say "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.Mai
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
     "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
+    "$env:SystemDrive\WINDOWS\system32\mobsync.exe"
 )
 foreach ($file in $files) {
     if (-not (Test-Path $file)) {

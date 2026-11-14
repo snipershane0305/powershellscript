@@ -356,7 +356,7 @@ function Set-Services {
 Set-Services
 
 Say "Deleting Temp Files"
-foreach ($p in "$env:windir\Prefetch\*", "$env:windir\Minidump\*", "$env:windir\LiveKernelReports\*", "$env:ProgramData\Microsoft\Windows\WER\ReportQueue\*", "$env:ProgramData\Microsoft\Windows\WER\ReportArchive\*", "$env:windir\ServiceProfiles\NetworkService\AppData\Local\Microsoft\Windows\DeliveryOptimization\Cache\*") {
+foreach ($p in "$env:TEMP\*", "$env:windir\Temp\*", "$env:windir\Prefetch\*", "$env:windir\Minidump\*", "$env:windir\LiveKernelReports\*", "$env:ProgramData\Microsoft\Windows\WER\ReportQueue\*", "$env:ProgramData\Microsoft\Windows\WER\ReportArchive\*", "$env:windir\ServiceProfiles\NetworkService\AppData\Local\Microsoft\Windows\DeliveryOptimization\Cache\*") {
     Remove-Item -Path $p -Recurse -Force -ErrorAction SilentlyContinue
 }
 Remove-Item "$env:windir\MEMORY.DMP" -Force -ErrorAction SilentlyContinue
@@ -395,6 +395,7 @@ foreach ($key in $bcd.Keys) {
         bcdedit /set $key $bcd[$key] *> $null
     }
 }
+
 Say "Changing File System Settings"
 if ((fsutil behavior query disablelastaccess | Out-String) -notmatch 'registry state is:\s*1') { fsutil behavior set disablelastaccess 1 *>$null }
 if ((fsutil behavior query disable8dot3 | Out-String) -notmatch 'registry state is:\s*1') { fsutil behavior set disable8dot3 1 *>$null }
@@ -695,6 +696,7 @@ foreach ($t in $Tasks) {
         Disable-ScheduledTask -TaskPath $t.TaskPath -TaskName $t.TaskName | Out-Null
     }
 }
+
 Say "Disabling Trace Loggers"
 $loggers = "CimFSUnionFS-Filter", "Circular Kernel Context Logger", "DefenderApiLogger", "DefenderAuditLogger", "DiagLog", "Diagtrack-Listener", "FilterMgr-Logger", "LwtNetLog", "Microsoft-Windows-Rdp-Graphics-RdpIdd-Trace", "NtfsLog", "ReFSLog", "UBPM", "WdiContextLog", "WiFiDriverIHVSession", "WiFiDriverIHVSessionRepro", "WiFiSession"
 $pendingLoggers = @()
@@ -749,6 +751,7 @@ TaskPath,TaskName
         Stop-Service LanmanServer, LanmanWorkstation -Force -ErrorAction SilentlyContinue
     }
 }
+
 Say "Setting Power Plan"
 $planGuid = "5a4d0a2e-7c3b-4f1e-9d3a-6b1c2e8f4a10"
 $powerCsv = @"
@@ -784,7 +787,8 @@ if (-not $exists -or -not $active -or $applied -ne $powerCsv) {
     if (-not (Test-Path $regPath)) { New-Item -Path $regPath | Out-Null }
     Set-ItemProperty -Path $regPath -Name "Applied" -Type String -Value $powerCsv
 }
-Say "Killing Smartscreen.exe, CrossDeviceResume, and UsageAndQualityInsights.MaintenanceTask.exe"
+
+Say "Killing Processes"
 $files = @(
     "$env:SystemDrive\WINDOWS\system32\smartscreen.exe"
     "$env:SystemDrive\WINDOWS\system32\Microsoft.Data.UsageAndQualityInsights.MaintenanceTask.exe"
@@ -801,6 +805,14 @@ foreach ($file in $files) {
 }
 Get-Process -Name *CrossDeviceResume* -ErrorAction SilentlyContinue | Stop-Process -Force
 
+Say "Releasing Memory"
+Set-Location $env:SystemDrive\
+if (Test-Path ".\memreduct.exe") {
+    Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
+    Start-Sleep -Seconds 5
+    taskkill /IM memreduct.exe /F *>$null
+}
+
 Say "Waiting 3 minutes to stop lingering processes/services"
 $total = 180
 for ($i = $total; $i -ge 0; $i--) {
@@ -810,15 +822,8 @@ for ($i = $total; $i -ge 0; $i--) {
     Start-Sleep -Seconds 1
 }
 Write-Progress -Activity "Waiting" -Completed
-Say "Releasing Memory"
-Set-Location $env:SystemDrive\
-if (Test-Path ".\memreduct.exe") {
-    Start-Process -FilePath ".\memreduct.exe" -ArgumentList "-clean:full", "-silent" -WindowStyle Hidden
-    Start-Sleep -Seconds 5
-    taskkill /IM memreduct.exe /F *>$null
-}
+
 Say "Setting Services"
 Set-Services
-
 Say "Done"
 pause

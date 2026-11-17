@@ -13,9 +13,12 @@ function Set-Reg($Path, $Name, $Value, $Type = "DWord") {
 }
 $taskName = "powershellscript"
 $taskUser = "$env:USERDOMAIN\$env:USERNAME"
-if (-not (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue)) {
-    Say "Installed Logon Task"
-    $action    = New-ScheduledTaskAction -Execute (Get-Process -Id $PID).Path -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -File `"$PSCommandPath`""
+$taskExe  = "$env:SystemRoot\System32\conhost.exe"
+$taskArgs = "`"$((Get-Process -Id $PID).Path)`" -NoProfile -ExecutionPolicy Bypass -WindowStyle Minimized -File `"$PSCommandPath`""
+$existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+if (-not $existingTask -or $existingTask.Actions[0].Execute -ne $taskExe -or $existingTask.Actions[0].Arguments -ne $taskArgs) {
+    Say "Installing Logon Task"
+    $action    = New-ScheduledTaskAction -Execute $taskExe -Argument $taskArgs
     $trigger   = New-ScheduledTaskTrigger -AtLogOn -User $taskUser
     $trigger.Delay = "PT10S"
     $principal = New-ScheduledTaskPrincipal -UserId $taskUser -LogonType Interactive -RunLevel Highest
@@ -217,7 +220,7 @@ wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framewo
 NetSetupSvc,Manual,Manual,False,Network Setup Service
 WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 iphlpsvc,Manual,Automatic,False,IP Helper
-hidserv,Manual,Manual,Fakse,Human Interface Device Service
+hidserv,Manual,Manual,Fake,Human Interface Device Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"

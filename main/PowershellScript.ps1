@@ -216,6 +216,8 @@ workfolderssvc,Manual,Manual,False,Work Folders
 wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framework
 NetSetupSvc,Manual,Manual,False,Network Setup Service
 WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
+iphlpsvc,Manual,Automatic,False,IP Helper
+hidserv,Manual,Manual,Fakse,Human Interface Device Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"
@@ -257,7 +259,6 @@ StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
 TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
 ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
 DeviceAssociationService,Disabled,Manual,True,Device Association Service
-hidserv,Disabled,Manual,True,Human Interface Device Service
 
 wuauserv,Disabled,Manual,True,Windows Update
 BITS,Disabled,Automatic,True,Background Intelligent Transfer Service
@@ -320,11 +321,10 @@ GoogleChromeElevationService,Disabled,Manual,True,Google Chrome Elevation Servic
 $forcestopOnlyServices = @"
 Name,StartupType,OriginalType,ForceStop,DisplayName
 sppsvc,Manual,Automatic,True,Software Protection
-ClipSVC,Manual,Manual,True,Client License Service (ClipSVC)
+ClipSVC,Manual,Manual,True,Client License Service
 camsvc,Manual,Manual,True,Capability Access Manager Service
 cbdhsvc_*,Manual,Automatic,True,Clipboard User Service
 DusmSvc,Manual,Automatic,True,Data Usage
-iphlpsvc,Manual,Automatic,True,IP Helper
 AppXSvc,Manual,Manual,True,AppX Deployment Service
 WpnUserService_*,Manual,Automatic,True,Windows Push Notifications User Service
 FrameServer,Manual,Manual,True,Windows Camera Frame Server
@@ -443,6 +443,7 @@ foreach ($domain in $blocklist) {
 if ($changed) { Clear-DnsClientCache }
 
 Say "Changing Registry Settings"
+Set-Reg "HKCU:\Control Panel\Mouse" "MouseSensitivity" 10 String
 Set-Reg "HKCU:\Control Panel\Mouse" "MouseSpeed" 0 String
 Set-Reg "HKCU:\Control Panel\Mouse" "MouseThreshold1" 0 String
 Set-Reg "HKCU:\Control Panel\Mouse" "MouseThreshold2" 0 String
@@ -456,6 +457,20 @@ Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSett
 Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" "ShowSleepOption" 0
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" 0
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" "PowerThrottlingOff" 1
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" "TaskbarEndTask" 1
+Set-Reg "HKCU:\Control Panel\Desktop" "MenuShowDelay" 0 String
+Set-Reg "HKCU:\Control Panel\Desktop\WindowMetrics" "MinAnimate" 0 String
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarAnimations" 0
+Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardDelay" 0 String
+Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardSpeed" 31 String
+Set-Reg "HKCU:\SOFTWARE\Microsoft\Multimedia\Audio" "UserDuckingPreference" 3
+if ((Get-ItemProperty -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" -Name "FolderType" -ErrorAction SilentlyContinue).FolderType -ne "NotSpecified") {
+    Remove-Item -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags", "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU" -Recurse -Force -ErrorAction SilentlyContinue
+}
+Set-Reg "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" "FolderType" "NotSpecified" String
+if (-not (Test-Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32")) {
+    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -Value "" | Out-Null
+}
 
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" "AllowGameDVR" 0
 Set-Reg "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 1
@@ -468,6 +483,7 @@ Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" "LetAppsRunInBack
 Set-Reg "HKLM:\SOFTWARE\Microsoft\Input" "InputServiceEnabled" 0
 Set-Reg "HKLM:\SOFTWARE\Microsoft\Input" "InputServiceEnabledForCCI" 0
 Set-Reg "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Connectivity\DisableCrossDeviceResume" "value" 1
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" "fDenyTSConnections" 1
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" "EnableVirtualizationBasedSecurity" 0
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" "Enabled" 0
@@ -479,6 +495,9 @@ Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Managemen
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "DisablePageCombining" 1
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" "DisablePagingExecutive" 1
 Set-Reg "HKLM:\SYSTEM\ControlSet001\Control\PriorityControl" "Win32PrioritySeparation" 0x0000002A
+
+Set-Reg "HKLM:\SOFTWARE\Microsoft\FTH" "Enabled" 0
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" "CrashDumpEnabled" 3
 
 #Windows update
 Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" "DODownloadMode" 0
@@ -580,28 +599,6 @@ Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "EnableCdp" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "CdpSessionUserAuthzPolicy" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "NearShareChannelUserAuthzPolicy" 0
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CDP" "RomeSdkChannelUserAuthzPolicy" 0
-
-Say "Changing Explorer and Shell Settings"
-if ((Get-ItemProperty -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" -Name "FolderType" -ErrorAction SilentlyContinue).FolderType -ne "NotSpecified") {
-    Remove-Item -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags", "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU" -Recurse -Force -ErrorAction SilentlyContinue
-}
-Set-Reg "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" "FolderType" "NotSpecified" String
-if (-not (Test-Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32")) {
-    New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -Value "" | Out-Null
-}
-Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" "TaskbarEndTask" 1
-Set-Reg "HKCU:\Control Panel\Desktop" "MenuShowDelay" 0 String
-Set-Reg "HKCU:\Control Panel\Desktop\WindowMetrics" "MinAnimate" 0 String
-Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "TaskbarAnimations" 0
-Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardDelay" 0 String
-Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardSpeed" 31 String
-
-Say "Changing Audio, Mouse and System Settings"
-Set-Reg "HKCU:\SOFTWARE\Microsoft\Multimedia\Audio" "UserDuckingPreference" 3
-Set-Reg "HKCU:\Control Panel\Mouse" "MouseSensitivity" 10 String
-Set-Reg "HKLM:\SOFTWARE\Microsoft\FTH" "Enabled" 0
-Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" "CrashDumpEnabled" 3
-Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" "fDenyTSConnections" 1
 
 Say "Disabling Reserved Storage"
 if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" -Name "ShippedWithReserves" -ErrorAction SilentlyContinue).ShippedWithReserves -eq 1) {

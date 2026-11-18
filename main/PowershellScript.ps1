@@ -124,7 +124,6 @@ SCardSvr,Manual,Manual,False,Smart Card
 SEMgrSvc,Manual,Manual,False,Payments and NFC/SE Manager
 SENS,Automatic,Automatic,False,System Event Notification Service
 SNMPTRAP,Manual,Manual,False,SNMP Trap
-SNMPTrap,Manual,Manual,False,SNMP Trap (alt casing)
 SamSs,Automatic,Automatic,False,Security Accounts Manager
 ScDeviceEnum,Manual,Manual,False,Smart Card Device Enumeration Service
 Schedule,Automatic,Automatic,False,Task Scheduler
@@ -157,7 +156,6 @@ WMPNetworkSvc,Manual,Manual,False,Windows Media Player Network Sharing Service
 WManSvc,Manual,Manual,False,Windows Management Service
 WPDBusEnum,Manual,Manual,False,Portable Device Enumerator Service
 WSService,Manual,Manual,False,Windows Store Service (uncertain)
-WaaSMedicSvc,Manual,Manual,False,Windows Update Medic Service
 WalletService,Manual,Manual,False,WalletService
 WarpJITSvc,Manual,Manual,False,WarpJITSvc (D3D software rasterizer JIT, uncertain)
 WbioSrvc,Manual,Manual,False,Windows Biometric Service
@@ -186,7 +184,6 @@ embeddedmode,Manual,Manual,False,Embedded Mode
 gpsvc,Automatic,Automatic,False,Group Policy Client
 icssvc,Manual,Manual,False,Windows Mobile Hotspot Service
 lltdsvc,Manual,Manual,False,Link-Layer Topology Discovery Mapper
-mpssvc,Automatic,Automatic,False,Windows Defender Firewall
 msiserver,Manual,Manual,False,Windows Installer
 netprofm,Manual,Manual,False,Network List Service
 nsi,Automatic,Automatic,False,Network Store Interface Service
@@ -220,7 +217,7 @@ wudfsvc,Manual,Manual,False,Windows Driver Foundation - User-mode Driver Framewo
 NetSetupSvc,Manual,Manual,False,Network Setup Service
 WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 iphlpsvc,Manual,Automatic,False,IP Helper
-hidserv,Manual,Manual,Fake,Human Interface Device Service
+hidserv,Manual,Manual,False,Human Interface Device Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"

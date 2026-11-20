@@ -218,6 +218,7 @@ NetSetupSvc,Manual,Manual,False,Network Setup Service
 WinHttpAutoProxySvc,Manual,Manual,False,WinHTTP Web Proxy Auto-Discovery Service
 iphlpsvc,Manual,Automatic,False,IP Helper
 hidserv,Manual,Manual,False,Human Interface Device Service
+TextInputManagementService,Automatic,Automatic,False,Text Input Management Service
 "@ | ConvertFrom-Csv
 
 $disabledServices = @"
@@ -256,7 +257,6 @@ PolicyAgent,Disabled,Manual,True,IPsec Policy Agent
 dot3svc,Disabled,Manual,True,Wired AutoConfig
 whesvc,Disabled,Automatic,True,Windows Health and Optimized Experiences
 StiSvc,Disabled,Manual,True,Windows Image Acquisition (WIA)
-TextInputManagementService,Disabled,Automatic,True,Text Input Management Service
 ShellHWDetection,Disabled,Automatic,True,Shell Hardware Detection
 DeviceAssociationService,Disabled,Manual,True,Device Association Service
 

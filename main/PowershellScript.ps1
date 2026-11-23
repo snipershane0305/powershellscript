@@ -408,10 +408,6 @@ if ($rssOff) { $rssOff | Enable-NetAdapterRss -ErrorAction SilentlyContinue }
 if ((Get-NetTeredoConfiguration -ErrorAction SilentlyContinue).Type -ne 'Disabled') { netsh int teredo set state disabled | Out-Null }
 if ((Get-Net6to4Configuration -ErrorAction SilentlyContinue).State -ne 'Disabled') { netsh int 6to4 set state disabled | Out-Null }
 if ((Get-NetIsatapConfiguration -ErrorAction SilentlyContinue).State -ne 'Disabled') { netsh int isatap set state disabled | Out-Null }
-if ((Get-NetTCPSetting -SettingName Internet -ErrorAction SilentlyContinue).EcnCapability -ne 'Enabled') {
-    netsh int tcp set global ecncapability=enable | Out-Null
-    Set-NetTCPSetting -SettingName internet -EcnCapability enabled
-}
 if ($offload.ReceiveSegmentCoalescing -ne 'Disabled') {
     netsh int tcp set global rsc=disabled | Out-Null
     Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Disabled

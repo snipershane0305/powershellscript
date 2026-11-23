@@ -8,8 +8,6 @@
 
 ---
 
-> [!WARNING]
-> This script changes many things that can cause problems or break features you may use, so make sure it won't disable anything you need. Check the [wiki](https://github.com/snipershane0305/powershellscript/wiki) for what each configuration does before running it.
 
 ## About
 
@@ -20,7 +18,8 @@ It may improve system stability, performance, and network performance by using m
 > [!NOTE]
 > You **won't** see a big performance impact in **games** if there were no previous issues with Windows. Game performance depends much more on your specific hardware and clock speeds. Consider overclocking/undervolting and better cooling for better performance in games!
 
-More information about each configuration is in the [wiki](https://github.com/snipershane0305/powershellscript/wiki).
+> [!WARNING]
+> This script changes many things that can cause problems or break features you may use, so make sure it won't disable anything you need. Check the [wiki](https://github.com/snipershane0305/powershellscript/wiki) for what each configuration does before running it.
 
 ## How to Use
 

@@ -2,8 +2,7 @@
 
 **A PowerShell script that improves the privacy and performance of Windows and keeps those settings persistent, because Windows loves reverting changes randomly.**
 
-[Wiki](https://github.com/snipershane0305/powershellscript/wiki) · [How to Use](#-how-to-use) · [Extra Information](#-extra-information)
-
+[Wiki](https://github.com/snipershane0305/powershellscript/wiki) · [How to Use](#how-to-use)
 </div>
 
 

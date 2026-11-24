@@ -49,9 +49,10 @@ You may also need to add the script to your exclusion list in Windows Defender.
 
 | Resource | Link |
 |---|---|
+| winutil | https://github.com/ChrisTitusTech/winutil |
+| Amitxv | https://github.com/arduuh/amitxv-PC-Tuning |
+| Calypto's Latency Guide | https://docs.google.com/document/d/1c2-lUJq74wuYK1WrA_bIvgb89dUN0sj8-hO3vqmrau4 |
 | PC-Tuning | https://github.com/valleyofdoom/PC-Tuning |
 | PC-Optimization-Hub | https://github.com/BoringBoredom/PC-Optimization-Hub |
 | GamingPCSetup | https://github.com/djdallmann/GamingPCSetup |
-| winutil | https://github.com/ChrisTitusTech/winutil |
-| Calypto's Latency Guide | https://docs.google.com/document/d/1c2-lUJq74wuYK1WrA_bIvgb89dUN0sj8-hO3vqmrau4 |
 | Google Doc | https://docs.google.com/document/d/14ma-_Os3rNzio85yBemD-YSpF_1z75mZJz1UdzmW8GE |

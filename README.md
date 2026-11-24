@@ -10,7 +10,7 @@
 
 This repository is for my PowerShell script made to configure many Windows settings to improve privacy and performance, and to keep those settings in place after Windows tries to change them back.
 
-It may improve system stability, performance, and network performance by using more performant configurations and lowering system resource usage.
+It may improve system stability, performance, network latency, and lowering system resource usage by using more performant configurations/settings.
 
 You **won't** see a big performance impact in **games** if there were no previous issue with Windows. Game performance depends much more on your specific hardware and clock speeds. Consider overclocking/undervolting and better cooling for better performance in games!
 
@@ -28,7 +28,7 @@ You **won't** see a big performance impact in **games** if there were no previou
 | `PsExec64.exe` | Runs commands with higher privileges |
 | `SetTimerResolution.exe` | Timer resolution tool |
 
-**2.** You may need to run these:
+**2.** You may need to run these if it is blocked:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser Unrestricted
